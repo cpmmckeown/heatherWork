@@ -93,6 +93,9 @@ animation-iteration-count: 1, infinite;
 100%{opacity: 1;}
 }
 
+@media screen and (max-width: 1000px)
+{.col-menu{width:40%; margin-left: 42%;}}
+
 </style>
 </head>
 <body>
@@ -102,7 +105,7 @@ animation-iteration-count: 1, infinite;
 
 <!-- ABOUT AND CONTACT -->
 <div class="row">
-	<div class="col-border1" style="width: 90%"></div>
+	<div class="col-border1" id="menuBorder" style="width: 90%"></div>
 	<div class="col-menu" id="menu"><ul><li id="about" onclick="about()">ABOUT</li><li id="contact" onclick="contact()">CONTACT</li></ul></div>
 </div>
 
