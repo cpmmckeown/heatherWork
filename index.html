@@ -11,12 +11,13 @@
 * 
 {box-sizing: border-box; font-family: 'Montserrat', sans-serif;}
 
-img{margin-left:25%; box-shadow: 5px 10px 18px #888888;}
+/*IMAGES - SIZES AND SHADOWS*/
+img{margin-top: 0%; margin-left:25%; filter: drop-shadow(5px 5px 5px #222);}
 
 /*BACKGROUND COLOUR*/
 body{background: linear-gradient(rgba(230,230,250,1), rgba(230,230,250,0)); background-repeat: no-repeat;}
 
-/*APPLYING TO ALL COLUMNS*/
+/*APPLYING TO ALL COLUMNS*/ /* ***ALWAYS DO THIS BORDER WIDTH THING! IT ALLOWS YOU TO TOGGLE A GRID VIEW*** */
 [class*="col-"]{float: left; padding 15px; border-style:solid; border-width: 0px; min-height:1em;}
 
 /*SPACING AFTER TABLES*/
@@ -28,7 +29,7 @@ body{background: linear-gradient(rgba(230,230,250,1), rgba(230,230,250,0)); back
 
 /*TITLE FOMATTING*/
 .col-title 
-{margin-top:7%; width:80%; text-align:center; font-size:4em;}
+{margin-top:3%; width:80%; text-align:center; font-size:4em;}
 
 /*MENU FORMATTING*/
 .col-menu
@@ -46,7 +47,9 @@ body{background: linear-gradient(rgba(230,230,250,1), rgba(230,230,250,0)); back
 .col-text
 {width:80%; text-align:center;}
 
-/*CHANGE MOUSE TO POINTER ON CLICKABLE ELEMENTS - AND ADD SHADOWS*/
+/*CHANGE MOUSE TO POINTER ON CLICKABLE ELEMENTS*/
+#stars {cursor:pointer; animation-duration: 2s; animation-iteration-count: 1; animation-name: appear;}
+#moon {cursor:pointer; animation-duration: 2s; animation-iteration-count: 1; animation-name: appear;}
 #about{cursor:pointer;}
 #contact{cursor:pointer;}
 #enter {cursor:pointer; animation: 10s 1 appear;}
@@ -56,10 +59,18 @@ body{background: linear-gradient(rgba(230,230,250,1), rgba(230,230,250,0)); back
 #card1 {cursor:pointer; animation-duration: 2s; animation-iteration-count: 1; animation-name: appear;}
 #card2 {cursor:pointer; animation-duration: 2s; animation-iteration-count: 1; animation-name: appear;}
 #card3 {cursor:pointer; animation-duration: 2s; animation-iteration-count: 1; animation-name: appear;}
+#contactInfo {cursor:pointer; animation-duration: 2s; animation-iteration-count: 1; animation-name: appear;}
 
-/*CHANGE MOUSE TO POINTER ON THE FLOATERS*/
-.floater
-{cursor:pointer;}
+/*FLOATERS*/
+.openFloater
+{
+overflow: auto;
+z-index: 10; padding: 10px; padding-right: 20%; width:60%; max-height: 600px; position: fixed; margin-left:20%; margin-top: 8%; background-color:#ffffff; cursor:pointer;
+animation: 1s 1 appear;
+}
+
+.closedFloater
+{transition: all 1s; z-index: -10; padding: 0px; width:45%; height: 0px; position: fixed;}
 
 /*ANIMATION TO MAKE THE ROCK LAMP GROW*/
 #rockLamp 
@@ -86,8 +97,8 @@ animation-iteration-count: 1, infinite;
 </head>
 <body>
 <!-- THESE ARE THE POPUPS FOR THE ABOUT AND CONTACT -->
-<div class="floater" id="aboutInfo"></div>
-<div class="floater" id="contactInfo"></div>
+<div class="closedFloater" id="aboutInfo"></div>
+<div class="closedFloater" id="contactInfo"></div>
 
 <!-- ABOUT AND CONTACT -->
 <div class="row">
@@ -114,6 +125,11 @@ animation-iteration-count: 1, infinite;
 <div class="col-border2"></div>
 </div>
 
+<div class="row">
+<div class="col-border1"></div>
+<div class="col-" id="postButtons" style="min-width:80%; min-height:10px;"> </div>
+<div class="col-border2"></div>
+</div>
 
 <script>
 //FACEBOOK SDK
@@ -133,6 +149,24 @@ window.fbAsyncInit = function() {
      js.src = "https://connect.facebook.net/en_US/sdk.js";
      fjs.parentNode.insertBefore(js, fjs);
    }(document, 'script', 'facebook-jssdk'));
+   
+//TWITTER WIDGETS
+window.twttr = (function(d, s, id) {
+  var js, fjs = d.getElementsByTagName(s)[0],
+    t = window.twttr || {};
+  if (d.getElementById(id)) return t;
+  js = d.createElement(s);
+  js.id = id;
+  js.src = "https://platform.twitter.com/widgets.js";
+  fjs.parentNode.insertBefore(js, fjs);
+
+  t._e = [];
+  t.ready = function(f) {
+    t._e.push(f);
+  };
+
+  return t;
+}(document, "script", "twitter-wjs"));
 
 //THESE IS USED TO SELECT RANDOM CARDS IN THE DRAW FUNCTION
 //FIRST, DRAW() GENERATES A RANDOM NUMBER.
@@ -143,10 +177,10 @@ var randCard1 = 0;
 var randCard2 = 0;
 var randCard3 = 0;
 
-//THESE ARE JUST USED AS SWITCHES FOR THE ABOUT/CONTACT. 
-//COULD HAVE JUST USED TRUE/FALSE.
-var z = "z";
-var y = "y";
+//THESE ARE JUST USED AS SWITCHES FOR THE ABOUT/CONTACT. FLOATERS
+//THEY ALLOW ME TO EASILY STOP THEM BOTH BEING OPEN.
+var aboutOpen = false;
+var contactOpen = false;
 
 //USED TO DECIDE THE SIZE OF DECK
 var deckSize = 0;
@@ -155,37 +189,69 @@ var deckSize = 0;
  document.getElementById("yes").onclick = function(){yes()};
  document.getElementById("no").onclick = function(){no()};
 
-//CLOSE POPUPS
-function closeFloater(value)
-{
-	if (value == "z"){alert("The value passed is " + value);}
-	else if (value == "y") {alert("The value passed is " + value);}
+
+//OPEN FLOATERS
+function loopOpenFloaters(){
+var closedFloaters = document.getElementsByClassName("closedFloater");
+	for (var i = 0;i<closedFloaters.length; i++)
+	{
+		closedFloaters[i].className = "openFloater";
+	}
 }
 
+//CLOSE FLOATERS
+function closeFloater()
+{
+	document.getElementById("contactInfo").innerHTML = '';
+	document.getElementById("aboutInfo").innerHTML = '';
+	aboutOpen = false;
+	contactOpen = false;
+	// ***open floaters means in this case means 'currently open'***
+	var openFloaters = document.getElementsByClassName("openFloater");
+		for (var i = 0;i<openFloaters.length; i++)
+		{
+		openFloaters[i].className = "closedFloater";
+		}
+	}
+
+	
 //ABOUT DETAILS 
   function about() 
   {
-	alert("about");
-	document.getElementById("contactInfo").innerHTML = '<div class="floater" id="contactInfo" style="width:25%; height: 500px; position: fixed; background-color:yellow; margin-left:35%; margin-top: 8%" onclick="closeFloater(z)"></div>';
-	document.getElementById("aboutInfo").innerHTML = '<div class="floater" id="aboutInfo" style="width:25%; min-height: 200px; height: 500px; position: fixed; background-color:yellow; margin-left:35%; margin-top: 8%" onclick="closeFloater(z)"></div>';
- }
+	if (contactOpen == true || aboutOpen == true)
+	{closeFloater();}
+	else if (contactOpen == false && aboutOpen == false)
+	{
+	aboutOpen = true;
+	loopOpenFloaters();
+	document.getElementById("aboutInfo").innerHTML = '<p><h1>ABOUT</h1><p><p>Poet Tarot Reader produces poems as tarot readings. <p>When a visitor shuffles the cards, a calculation occurs to determine which three cards will present for them from the Major Arcana, including whether any cards are reversed. </p><p>Poetic lines that offer exposition on each card appear.</p><p>These accumulate to form an individual 3-line poem.</p><p>The generated poem is offered to the visitor to interpret, weaving meaning across lines.</p><p>Poet Tarot Reader realises a spiritual alchemy with poetic lines as tarot cards and poems as tarot card readings.</p><p>Poet Tarot Reader uses cards by Norbert Lösche which you can purchase <a href="http://www.tarotworld.com/shop/searchresult/c11982fd14a2a5fc4e527ff584ee9d1a.html?tx_kfproducts_pi1%5BshowUid%5D=2">here</a>.</p><p>Illustrations from Cosmic Tarot reproduced by permission of AGM-Urania/Koenigsfurt-Urania Verlag, Germany, © AGM-Urania/Koenigsfurt-Urania Verlag. Further reproduction prohibited.</p></div>';
+	document.getElementById("aboutInfo").onclick = function() {closeFloater()}
+	}
+  }
  
  //CONTACT DETAILS
  function contact() 
  {
-	alert("contact");
-	document.getElementById("aboutInfo").innerHTML = '<div class="floater" id="aboutInfo" style="width:25%; height: 500px; position: fixed; background-color:yellow; margin-left:35%; margin-top: 8%" onclick="closeFloater(z)"></div>';
-	document.getElementById("contactInfo").innerHTML = '<div class="floater" id="contactInfo" style="width:25%; min-height: 200px; height: 500px; position: fixed; background-color:yellow; margin-left:35%; margin-top: 8%" onclick="closeFloater(y)"></div>';
+	if (contactOpen == true || aboutOpen == true)
+	{closeFloater();}
+	else if (contactOpen == false && aboutOpen == false)
+	{
+	contactOpen = true;
+	loopOpenFloaters();
+	document.getElementById("aboutInfo").innerHTML = '<p><h1>CONTACT</h1></p><p>Poet Tarot Reader was created by Heather O’Donnell and Conor Mckeown. </p><p>Heather O’Donnell is a poet and Conor Mckeown is an academic and game developer.</p><p><a href="mailto:heather28@gmail.com?Subject=Poet%20Tarot%20Reader" target="_top">Contact Us Via Email</a></p></div>';
+	document.getElementById("aboutInfo").onclick = function() {closeFloater()}
+	}
  }
  
 //ON PRESSING ENTER, CHANGE THE IMAGE, ADD THE DECK QUESTION.
  function enter() 
  {
+	closeFloater();
 	document.getElementById("title").innerHTML = '';
 	document.getElementById("menu").innerHTML = '';
 	document.getElementById("images").innerHTML = '<img id="rockLamp" src="https://github.com/cpmmckeown/heatherWork/blob/master/poettarotreader/Rock%20Salt%20Lamp.png?raw=true" style="width:30%; height:30%; box-shadow: 0px 0px 0px #ffffff ; margin-left:35%">';
 	document.getElementById("enter").innerHTML = '<p id="enter">Would you like your reading to contain reversed cards?</p>';
-	document.getElementById("yes").innerHTML = '<p id="yes">yes/</p>'; 
+	document.getElementById("yes").innerHTML = '<p id="yes">yes</p>'; 
 	document.getElementById("no").innerHTML = '<p id="no">no</p>'; 
  }
  
@@ -194,8 +260,9 @@ function closeFloater(value)
 	{
 	document.getElementById("title").innerHTML = '';
 	document.getElementById("menu").innerHTML = '';
-	document.getElementById("images").innerHTML = '<img src="https://raw.githubusercontent.com/cpmmckeown/heatherWork/master/CardBack.jpg" id="backCard" style="width:20%; height:20%; margin-left:40%; margin-top: -10%" onclick="threeCardView(43)">';
-	document.getElementById("textSpace").innerHTML = '<p>You have chosen a wider range of possibilities. Think about the cards you see.<br>They will tell you about your past, present and future. <br> Click the card to proceed.</p>';
+	document.getElementById("images").innerHTML = '<img id="moon" src="C:/Users/Admin/Web_Design/Heather/moon.svg" style="width:20%; height:20%; margin-left:42%; margin-top: -10%" onclick="threeCardView(43)">';
+	document.getElementById("postButtons").innerHTML = '<img id="stars" src="C:/Users/Admin/Web_Design/Heather/stars.svg" style="width:20%; height:20%; margin-left:42%; margin-top: 2%" onclick="threeCardView(43)">';
+	document.getElementById("textSpace").innerHTML = '<p><p>Think about a question you might have for the Tarot Poet<br>It will read the cards from left to right. You can interpret the poem’s lines in<br>the following ways:</p><p><ul style="list-style-type:none"><li>• Past, Present, Future<li>• You, Your Path, Your Potential<li>• You, Relationship, Partner<li>• Situation, Action, Outcome<li>• Idea, Process, Aspiration</ul></p>';
 	//NOT EXACTLY ELEGANT BUT I HAVE FORCED THESE TO NULL
 	try {
     document.getElementById("yes").innerHTML = ''; 
@@ -210,7 +277,7 @@ function closeFloater(value)
 	document.getElementById("title").innerHTML = '';
 	document.getElementById("menu").innerHTML = '';
 	document.getElementById("images").innerHTML = '<img src="https://raw.githubusercontent.com/cpmmckeown/heatherWork/master/CardBack.jpg" id="backCard" style="width:20%; height:20%; margin-left:40%; margin-top: -10%" onclick="threeCardView(21)">';
-	document.getElementById("textSpace").innerHTML = '<p>You have chosen a narrower range of possibilities. Think about the cards you see.<br>They will tell you about your past, present and future. <br> Click the card to proceed.</p>';
+	document.getElementById("textSpace").innerHTML = '<p>Think about a question you might have for the Tarot Poet<br>It will read the cards from left to right. You can interpret the poem’s lines in<br>the following ways:</p><p><ul style="list-style-type:none"><li>Past, Present, Future<li>You, Your Path, Your Potential<li>You, Relationship, Partner<li>Situation, Action, Outcome<li>Idea, Process, Aspiration</ul></p>';
 	//NOT EXACTLY ELEGANT BUT I HAVE FORCED THESE TO NULL
 	try {
     document.getElementById("yes").innerHTML = ''; 
@@ -219,22 +286,17 @@ function closeFloater(value)
 	catch(err){}
 	}
 	
-//THIS SHOWS YOU THREE CARDS, FACE DOWN. CHANGES THE LAYOUT TO THE THREE CARD VIEW.
-//ID="IMAGE-ROW" 
+//THREE CARD VIEW
 function threeCardView(dS)
 	{
+	document.getElementById("postButtons").innerHTML = '';
 	deckSize = dS;
-	document.getElementById("title").style.minheight = "10px";
 	document.getElementById("image-row").innerHTML = '<div class="col-border1"></div><div class="col-images" id="card1" style="width:25%";><img src="https://raw.githubusercontent.com/cpmmckeown/heatherWork/master/CardBack.jpg" style="width:70%; height:30%;" onclick="drawCard1(deckSize)"></div><div class="col-images" id="card2" style="width:25%";> <img src="https://raw.githubusercontent.com/cpmmckeown/heatherWork/master/CardBack.jpg" style="width:70%; height:30%;"></div><div class="col-images" id="card3" style="width:25%";><img src="https://raw.githubusercontent.com/cpmmckeown/heatherWork/master/CardBack.jpg" style="width:70%; height:30%;"></div><div class="col-border2"></div>'
 	document.getElementById("textSpace").innerHTML = '<p id = "line1" ></p><p id = "line2"></p><p id = "line3"></p>';
 	}
 	
 
-//THIS IS THE DRAW FUNCTION. 
-//CLICK ON A CARD AND A RANDOM CARD IMAGE WILL BE CHOSEN
-//FIRST, DRAW() GENERATES A RANDOM NUMBER.
-//IT THEN CHECKS IF THE RANDOM VALUE IT HAS CHOSEN IS THE SAME 
-//AS THE PREVIOUSLY CHOSEN RANDOM CARDS. IF IT IS, IT ADDS 1. 
+//DRAW FUNCTION
 function drawCard1(deckSize)
 {
 	//CREATE A RANDOM NUMBER NOT EXCEDING DECKSIZE.
@@ -303,7 +365,7 @@ function drawCard1(deckSize)
 	else if (randCard1 == 11) {
 	document.getElementById("card1").innerHTML = '<img src="https://raw.githubusercontent.com/cpmmckeown/heatherWork/master/TheHermit.jpg" style="width:70%; height:30%;" > ';
 	document.getElementById("card2").innerHTML = '<img src="https://raw.githubusercontent.com/cpmmckeown/heatherWork/master/CardBack.jpg" style="width:70%; height:30%;" onclick="drawCard2(deckSize)">';
-	document.getElementById("line1").innerHTML = '<p>Aurora cantata behind your psychic curtain</p>';
+	document.getElementById("line1").innerHTML = '<p>An aurora behind your psychic curtain</p>';
 	}
 	else if (randCard1 == 12) {
 	document.getElementById("card1").innerHTML = '<img src="https://raw.githubusercontent.com/cpmmckeown/heatherWork/master/TheHierophant.jpg" style="width:70%; height:30%;" > ';
@@ -356,112 +418,112 @@ function drawCard1(deckSize)
 	document.getElementById("line1").innerHTML = '<p>When you walk a beginning meets a beginning</p>';
 	}
 	else if (randCard1 == 22) {
-	document.getElementById("card1").innerHTML = '<img src="https://raw.githubusercontent.com/cpmmckeown/heatherWork/master/Death.jpg" style="width:70%; height:30%; transform:rotate(180deg);" >';
-	document.getElementById("card2").innerHTML = '<img src="https://raw.githubusercontent.com/cpmmckeown/heatherWork/master/CardBack.jpg" style="width:70%; height:30%; transform:rotate(180deg);" onclick="drawCard2(deckSize)">';
+	document.getElementById("card1").innerHTML = '<img src="https://raw.githubusercontent.com/cpmmckeown/heatherWork/master/Death.jpg" style="width:70%; height:30%; transform:rotate(180deg); filter:drop-shadow(-5px -5px 5px #222);" >';
+	document.getElementById("card2").innerHTML = '<img src="https://raw.githubusercontent.com/cpmmckeown/heatherWork/master/CardBack.jpg" style="width:70%; height:30%;" onclick="drawCard2(deckSize)">';
 	document.getElementById("line1").innerHTML = '<p>A still image is a slow knife</p>';
 	}
 	else if (randCard1 == 23) {
-	document.getElementById("card1").innerHTML = '<img src="https://raw.githubusercontent.com/cpmmckeown/heatherWork/master/Judgement.jpg" style="width:70%; height:30%; transform:rotate(180deg);" >';
+	document.getElementById("card1").innerHTML = '<img src="https://raw.githubusercontent.com/cpmmckeown/heatherWork/master/Judgement.jpg" style="width:70%; height:30%; transform:rotate(180deg); filter:drop-shadow(-5px -5px 5px #222);" >';
 	document.getElementById("card2").innerHTML = '<img src="https://raw.githubusercontent.com/cpmmckeown/heatherWork/master/CardBack.jpg" style="width:70%; height:30%;" onclick="drawCard2(deckSize)">';
 	document.getElementById("line1").innerHTML = '<p>If your town wasn’t real, what then</p>';
 	}
 	else if (randCard1 == 24) {
-	document.getElementById("card1").innerHTML = '<img src="https://raw.githubusercontent.com/cpmmckeown/heatherWork/master/Justice.jpg" style="width:70%; height:30%; transform:rotate(180deg);">';
+	document.getElementById("card1").innerHTML = '<img src="https://raw.githubusercontent.com/cpmmckeown/heatherWork/master/Justice.jpg" style="width:70%; height:30%; transform:rotate(180deg); filter:drop-shadow(-5px -5px 5px #222);">';
 	document.getElementById("card2").innerHTML = '<img src="https://raw.githubusercontent.com/cpmmckeown/heatherWork/master/CardBack.jpg" style="width:70%; height:30%;" onclick="drawCard2(deckSize)">';
 	document.getElementById("line1").innerHTML = '<p>You cannot protect by writing in hieroglyphs</p>';
 	}
 	else if (randCard1 == 25) {
-	document.getElementById("card1").innerHTML = '<img src="https://raw.githubusercontent.com/cpmmckeown/heatherWork/master/Strength.jpg" style="width:70%; height:30%; transform:rotate(180deg);" >';
+	document.getElementById("card1").innerHTML = '<img src="https://raw.githubusercontent.com/cpmmckeown/heatherWork/master/Strength.jpg" style="width:70%; height:30%; transform:rotate(180deg); filter:drop-shadow(-5px -5px 5px #222);" >';
 	document.getElementById("card2").innerHTML = '<img src="https://raw.githubusercontent.com/cpmmckeown/heatherWork/master/CardBack.jpg" style="width:70%; height:30%;" onclick="drawCard2(deckSize)">';
 	document.getElementById("line1").innerHTML = '<p>Doubt trellises built from primeval reactions</p>';
 	}
 	else if (randCard1 == 26) {
-	document.getElementById("card1").innerHTML = '<img src="https://raw.githubusercontent.com/cpmmckeown/heatherWork/master/Temperance.jpg" style="width:70%; height:30%; transform:rotate(180deg);" >';
+	document.getElementById("card1").innerHTML = '<img src="https://raw.githubusercontent.com/cpmmckeown/heatherWork/master/Temperance.jpg" style="width:70%; height:30%; transform:rotate(180deg); filter:drop-shadow(-5px -5px 5px #222);" >';
 	document.getElementById("card2").innerHTML = '<img src="https://raw.githubusercontent.com/cpmmckeown/heatherWork/master/CardBack.jpg" style="width:70%; height:30%;" onclick="drawCard2(deckSize)">';
 	document.getElementById("line1").innerHTML = '<p>A person poured away cannot evaporate </p>';
 	}
 	else if (randCard1 == 27) {
-	document.getElementById("card1").innerHTML = '<img src="https://raw.githubusercontent.com/cpmmckeown/heatherWork/master/TheChariot.jpg" style="width:70%; height:30%; transform:rotate(180deg);" >';
+	document.getElementById("card1").innerHTML = '<img src="https://raw.githubusercontent.com/cpmmckeown/heatherWork/master/TheChariot.jpg" style="width:70%; height:30%; transform:rotate(180deg); filter:drop-shadow(-5px -5px 5px #222);" >';
 	document.getElementById("card2").innerHTML = '<img src="https://raw.githubusercontent.com/cpmmckeown/heatherWork/master/CardBack.jpg" style="width:70%; height:30%;" onclick="drawCard2(deckSize)">';
 	document.getElementById("line1").innerHTML = '<p>Your corona changes with you</p>';
 	}
 	else if (randCard1 == 28) {
-	document.getElementById("card1").innerHTML = '<img src="https://raw.githubusercontent.com/cpmmckeown/heatherWork/master/TheDevil.jpg" style="width:70%; height:30%; transform:rotate(180deg);" >';
+	document.getElementById("card1").innerHTML = '<img src="https://raw.githubusercontent.com/cpmmckeown/heatherWork/master/TheDevil.jpg" style="width:70%; height:30%; transform:rotate(180deg); filter:drop-shadow(-5px -5px 5px #222);" >';
 	document.getElementById("card2").innerHTML = '<img src="https://raw.githubusercontent.com/cpmmckeown/heatherWork/master/CardBack.jpg" style="width:70%; height:30%;" onclick="drawCard2(deckSize)">';
 	document.getElementById("line1").innerHTML = '<p>Your celestial lifeforce more than glinting gewgaws</p>';
 	}
 	else if (randCard1 == 29) {
-	document.getElementById("card1").innerHTML = '<img src="https://raw.githubusercontent.com/cpmmckeown/heatherWork/master/TheEmperor.jpg" style="width:70%; height:30%; transform:rotate(180deg);" >';
+	document.getElementById("card1").innerHTML = '<img src="https://raw.githubusercontent.com/cpmmckeown/heatherWork/master/TheEmperor.jpg" style="width:70%; height:30%; transform:rotate(180deg); filter:drop-shadow(-5px -5px 5px #222);" >';
 	document.getElementById("card2").innerHTML = '<img src="https://raw.githubusercontent.com/cpmmckeown/heatherWork/master/CardBack.jpg" style="width:70%; height:30%;" onclick="drawCard2(deckSize)">';
 	document.getElementById("line1").innerHTML = '<p>You are a vector in a rhizome of prelates</p>';
 	}
 	else if (randCard1 == 30) {
-	document.getElementById("card1").innerHTML = '<img src="https://raw.githubusercontent.com/cpmmckeown/heatherWork/master/TheEmpress.jpg" style="width:70%; height:30%; transform:rotate(180deg);" >';
+	document.getElementById("card1").innerHTML = '<img src="https://raw.githubusercontent.com/cpmmckeown/heatherWork/master/TheEmpress.jpg" style="width:70%; height:30%; transform:rotate(180deg); filter:drop-shadow(-5px -5px 5px #222);" >';
 	document.getElementById("card2").innerHTML = '<img src="https://raw.githubusercontent.com/cpmmckeown/heatherWork/master/CardBack.jpg" style="width:70%; height:30%;" onclick="drawCard2(deckSize)">';
 	document.getElementById("line1").innerHTML = '<p>Death forming a chassis in what you ignore</p>';
 	}
 	else if (randCard1 == 31) {
-	document.getElementById("card1").innerHTML = '<img src="https://raw.githubusercontent.com/cpmmckeown/heatherWork/master/TheFool.jpg" style="width:70%; height:30%; transform:rotate(180deg);" >';
+	document.getElementById("card1").innerHTML = '<img src="https://raw.githubusercontent.com/cpmmckeown/heatherWork/master/TheFool.jpg" style="width:70%; height:30%; transform:rotate(180deg); filter:drop-shadow(-5px -5px 5px #222);" >';
 	document.getElementById("card2").innerHTML = '<img src="https://raw.githubusercontent.com/cpmmckeown/heatherWork/master/CardBack.jpg" style="width:70%; height:30%;" onclick="drawCard2(deckSize)">';
 	document.getElementById("line1").innerHTML = '<p>Impishness undulates; a cataclysm </p>';
 	}
 	else if (randCard1 == 32) {
-	document.getElementById("card1").innerHTML = '<img src="https://raw.githubusercontent.com/cpmmckeown/heatherWork/master/TheHangedMan.jpg" style="width:70%; height:30%; transform:rotate(180deg);" >';
+	document.getElementById("card1").innerHTML = '<img src="https://raw.githubusercontent.com/cpmmckeown/heatherWork/master/TheHangedMan.jpg" style="width:70%; height:30%; transform:rotate(180deg); filter:drop-shadow(-5px -5px 5px #222);" >';
 	document.getElementById("card2").innerHTML = '<img src="https://raw.githubusercontent.com/cpmmckeown/heatherWork/master/CardBack.jpg" style="width:70%; height:30%;" onclick="drawCard2(deckSize)">';
 	document.getElementById("line1").innerHTML = '<p>Would planets mushroom had they not first kissed</p>';
 	}
 	else if (randCard1 == 33) {
-	document.getElementById("card1").innerHTML = '<img src="https://raw.githubusercontent.com/cpmmckeown/heatherWork/master/TheHermit.jpg" style="width:70%; height:30%; transform:rotate(180deg);" >';
+	document.getElementById("card1").innerHTML = '<img src="https://raw.githubusercontent.com/cpmmckeown/heatherWork/master/TheHermit.jpg" style="width:70%; height:30%; transform:rotate(180deg); filter:drop-shadow(-5px -5px 5px #222);" >';
 	document.getElementById("card2").innerHTML = '<img src="https://raw.githubusercontent.com/cpmmckeown/heatherWork/master/CardBack.jpg" style="width:70%; height:30%;" onclick="drawCard2(deckSize)">';
 	document.getElementById("line1").innerHTML = '<p>Corvidae are both curators and slaves</p>';
 	}
 	else if (randCard1 == 34) {
-	document.getElementById("card1").innerHTML = '<img src="https://raw.githubusercontent.com/cpmmckeown/heatherWork/master/TheHierophant.jpg" style="width:70%; height:30%; transform:rotate(180deg);" >';
+	document.getElementById("card1").innerHTML = '<img src="https://raw.githubusercontent.com/cpmmckeown/heatherWork/master/TheHierophant.jpg" style="width:70%; height:30%; transform:rotate(180deg); filter:drop-shadow(-5px -5px 5px #222);" >';
 	document.getElementById("card2").innerHTML = '<img src="https://raw.githubusercontent.com/cpmmckeown/heatherWork/master/CardBack.jpg" style="width:70%; height:30%;" onclick="drawCard2(deckSize)">';
 	document.getElementById("line1").innerHTML = '<p>Anosmatic to hothouse violets</p>';
 	}
 	else if (randCard1 == 35) {
-	document.getElementById("card1").innerHTML = '<img src="https://raw.githubusercontent.com/cpmmckeown/heatherWork/master/TheHighPriestess.jpg" style="width:70%; height:30%; transform:rotate(180deg);" >';
+	document.getElementById("card1").innerHTML = '<img src="https://raw.githubusercontent.com/cpmmckeown/heatherWork/master/TheHighPriestess.jpg" style="width:70%; height:30%; transform:rotate(180deg); filter:drop-shadow(-5px -5px 5px #222);" >';
 	document.getElementById("card2").innerHTML = '<img src="https://raw.githubusercontent.com/cpmmckeown/heatherWork/master/CardBack.jpg" style="width:70%; height:30%;" onclick="drawCard2(deckSize)">';
 	document.getElementById("line1").innerHTML = '<p>You are a space station at the apogee </p>';
 	}
 	else if (randCard1 == 36) {
-	document.getElementById("card1").innerHTML = '<img src="https://raw.githubusercontent.com/cpmmckeown/heatherWork/master/TheLovers.jpg" style="width:70%; height:30%; transform:rotate(180deg);" >';
+	document.getElementById("card1").innerHTML = '<img src="https://raw.githubusercontent.com/cpmmckeown/heatherWork/master/TheLovers.jpg" style="width:70%; height:30%; transform:rotate(180deg); filter:drop-shadow(-5px -5px 5px #222);" >';
 	document.getElementById("card2").innerHTML = '<img src="https://raw.githubusercontent.com/cpmmckeown/heatherWork/master/CardBack.jpg" style="width:70%; height:30%;" onclick="drawCard2(deckSize)">';
 	document.getElementById("line1").innerHTML = '<p>Take them to your vestigial forest</p>';
 	}
 	else if (randCard1 == 37) {
-	document.getElementById("card1").innerHTML = '<img src="https://raw.githubusercontent.com/cpmmckeown/heatherWork/master/TheMagician.jpg" style="width:70%; height:30%; transform:rotate(180deg);" >';
+	document.getElementById("card1").innerHTML = '<img src="https://raw.githubusercontent.com/cpmmckeown/heatherWork/master/TheMagician.jpg" style="width:70%; height:30%; transform:rotate(180deg); filter:drop-shadow(-5px -5px 5px #222);" >';
 	document.getElementById("card2").innerHTML = '<img src="https://raw.githubusercontent.com/cpmmckeown/heatherWork/master/CardBack.jpg" style="width:70%; height:30%;" onclick="drawCard2(deckSize)">';
 	document.getElementById("line1").innerHTML = '<p>Inertia a lily pad of loam</p>';
 	}
 	else if (randCard1 == 38) {
-	document.getElementById("card1").innerHTML = '<img src="https://raw.githubusercontent.com/cpmmckeown/heatherWork/master/TheMoon.jpg" style="width:70%; height:30%; transform:rotate(180deg);" >';
+	document.getElementById("card1").innerHTML = '<img src="https://raw.githubusercontent.com/cpmmckeown/heatherWork/master/TheMoon.jpg" style="width:70%; height:30%; transform:rotate(180deg); filter:drop-shadow(-5px -5px 5px #222);" >';
 	document.getElementById("card2").innerHTML = '<img src="https://raw.githubusercontent.com/cpmmckeown/heatherWork/master/CardBack.jpg" style="width:70%; height:30%;" onclick="drawCard2(deckSize)">';
 	document.getElementById("line1").innerHTML = '<p>Maul your way beyond gummy corporality </p>';
 	}
 	else if (randCard1 == 39) {
-	document.getElementById("card1").innerHTML = '<img src="https://raw.githubusercontent.com/cpmmckeown/heatherWork/master/TheStar.jpg" style="width:70%; height:30%; transform:rotate(180deg);" >';
+	document.getElementById("card1").innerHTML = '<img src="https://raw.githubusercontent.com/cpmmckeown/heatherWork/master/TheStar.jpg" style="width:70%; height:30%; transform:rotate(180deg); filter:drop-shadow(-5px -5px 5px #222);" >';
 	document.getElementById("card2").innerHTML = '<img src="https://raw.githubusercontent.com/cpmmckeown/heatherWork/master/CardBack.jpg" style="width:70%; height:30%;" onclick="drawCard2(deckSize)">';
 	document.getElementById("line1").innerHTML = '<p>Why shout in a forest at unmade paths</p>';
 	}
 	else if (randCard1 == 40) {
-	document.getElementById("card1").innerHTML = '<img src="https://raw.githubusercontent.com/cpmmckeown/heatherWork/master/TheSun.jpg" style="width:70%; height:30%; transform:rotate(180deg);" >';
+	document.getElementById("card1").innerHTML = '<img src="https://raw.githubusercontent.com/cpmmckeown/heatherWork/master/TheSun.jpg" style="width:70%; height:30%; transform:rotate(180deg); filter:drop-shadow(-5px -5px 5px #222);" >';
 	document.getElementById("card2").innerHTML = '<img src="https://raw.githubusercontent.com/cpmmckeown/heatherWork/master/CardBack.jpg" style="width:70%; height:30%;" onclick="drawCard2(deckSize)">';
-	document.getElementById("line1").innerHTML = '<p>Daffodils after winter solstice</p>';
+	document.getElementById("line1").innerHTML = '<p>Daffodils come after winter solstice</p>';
 	}
 	else if (randCard1 == 41) {
-	document.getElementById("card1").innerHTML = '<img src="https://raw.githubusercontent.com/cpmmckeown/heatherWork/master/TheTower.jpg" style="width:70%; height:30%; transform:rotate(180deg);" >';
+	document.getElementById("card1").innerHTML = '<img src="https://raw.githubusercontent.com/cpmmckeown/heatherWork/master/TheTower.jpg" style="width:70%; height:30%; transform:rotate(180deg); filter:drop-shadow(-5px -5px 5px #222);" >';
 	document.getElementById("card2").innerHTML = '<img src="https://raw.githubusercontent.com/cpmmckeown/heatherWork/master/CardBack.jpg" style="width:70%; height:30%;" onclick="drawCard2(deckSize)">';
 	document.getElementById("line1").innerHTML = '<p>High on an outcrop, who is it that yells ‘not yet’</p>';
 	}
 	else if (randCard1 == 42) {
-	document.getElementById("card1").innerHTML = '<img src="https://raw.githubusercontent.com/cpmmckeown/heatherWork/master/TheWorld.jpg" style="width:70%; height:30%; transform:rotate(180deg);" >';
+	document.getElementById("card1").innerHTML = '<img src="https://raw.githubusercontent.com/cpmmckeown/heatherWork/master/TheWorld.jpg" style="width:70%; height:30%; transform:rotate(180deg); filter:drop-shadow(-5px -5px 5px #222);" >';
 	document.getElementById("card2").innerHTML = '<img src="https://raw.githubusercontent.com/cpmmckeown/heatherWork/master/CardBack.jpg" style="width:70%; height:30%;" onclick="drawCard2(deckSize)">';
 	document.getElementById("line1").innerHTML = '<p>Apotheosis stretched in a cosmos expanding</p>';
 	}
 	else if (randCard1 == 43) {
-	document.getElementById("card1").innerHTML = '<img src="https://raw.githubusercontent.com/cpmmckeown/heatherWork/master/TheWheelofFortune.jpg" style="width:70%; height:30%; transform:rotate(180deg);" >';
+	document.getElementById("card1").innerHTML = '<img src="https://raw.githubusercontent.com/cpmmckeown/heatherWork/master/TheWheelofFortune.jpg" style="width:70%; height:30%; transform:rotate(180deg); filter:drop-shadow(-5px -5px 5px #222);" >';
 	document.getElementById("card2").innerHTML = '<img src="https://raw.githubusercontent.com/cpmmckeown/heatherWork/master/CardBack.jpg" style="width:70%; height:30%;" onclick="drawCard2(deckSize)">';
 	document.getElementById("line1").innerHTML = '<p>Don’t let events look back at you </p>';
 	}	
@@ -594,112 +656,112 @@ function drawCard2(deckSize)
 	document.getElementById("line2").innerHTML = '<p>When you walk a beginning meets a beginning</p>';
 	}
 	else if (randCard2 == 22) {
-	document.getElementById("card2").innerHTML = '<img src="https://raw.githubusercontent.com/cpmmckeown/heatherWork/master/Death.jpg" style="width:70%; height:30%; transform:rotate(180deg);" >';
-	document.getElementById("card3").innerHTML = '<img src="https://raw.githubusercontent.com/cpmmckeown/heatherWork/master/CardBack.jpg" style="width:70%; height:30%; transform:rotate(180deg);" onclick="drawCard3(deckSize)">';
+	document.getElementById("card2").innerHTML = '<img src="https://raw.githubusercontent.com/cpmmckeown/heatherWork/master/Death.jpg" style="width:70%; height:30%; transform:rotate(180deg); filter:drop-shadow(-5px -5px 5px #222);" >';
+	document.getElementById("card3").innerHTML = '<img src="https://raw.githubusercontent.com/cpmmckeown/heatherWork/master/CardBack.jpg" style="width:70%; height:30%; transform:rotate(180deg); filter:drop-shadow(-5px -5px 5px #222);" onclick="drawCard3(deckSize)">';
 	document.getElementById("line2").innerHTML = '<p>A still image is a slow knife</p>';
 	}
 	else if (randCard2 == 23) {
-	document.getElementById("card2").innerHTML = '<img src="https://raw.githubusercontent.com/cpmmckeown/heatherWork/master/Judgement.jpg" style="width:70%; height:30%; transform:rotate(180deg);" >';
+	document.getElementById("card2").innerHTML = '<img src="https://raw.githubusercontent.com/cpmmckeown/heatherWork/master/Judgement.jpg" style="width:70%; height:30%; transform:rotate(180deg); filter:drop-shadow(-5px -5px 5px #222);" >';
 	document.getElementById("card3").innerHTML = '<img src="https://raw.githubusercontent.com/cpmmckeown/heatherWork/master/CardBack.jpg" style="width:70%; height:30%;" onclick="drawCard3(deckSize)">';
 	document.getElementById("line2").innerHTML = '<p>If your town wasn’t real, what then</p>';
 	}
 	else if (randCard2 == 24) {
-	document.getElementById("card2").innerHTML = '<img src="https://raw.githubusercontent.com/cpmmckeown/heatherWork/master/Justice.jpg" style="width:70%; height:30%; transform:rotate(180deg);">';
+	document.getElementById("card2").innerHTML = '<img src="https://raw.githubusercontent.com/cpmmckeown/heatherWork/master/Justice.jpg" style="width:70%; height:30%; transform:rotate(180deg); filter:drop-shadow(-5px -5px 5px #222);">';
 	document.getElementById("card3").innerHTML = '<img src="https://raw.githubusercontent.com/cpmmckeown/heatherWork/master/CardBack.jpg" style="width:70%; height:30%;" onclick="drawCard3(deckSize)">';
 	document.getElementById("line2").innerHTML = '<p>You cannot protect by writing in hieroglyphs</p>';
 	}
 	else if (randCard2 == 25) {
-	document.getElementById("card2").innerHTML = '<img src="https://raw.githubusercontent.com/cpmmckeown/heatherWork/master/Strength.jpg" style="width:70%; height:30%; transform:rotate(180deg);" >';
+	document.getElementById("card2").innerHTML = '<img src="https://raw.githubusercontent.com/cpmmckeown/heatherWork/master/Strength.jpg" style="width:70%; height:30%; transform:rotate(180deg); filter:drop-shadow(-5px -5px 5px #222);" >';
 	document.getElementById("card3").innerHTML = '<img src="https://raw.githubusercontent.com/cpmmckeown/heatherWork/master/CardBack.jpg" style="width:70%; height:30%;" onclick="drawCard3(deckSize)">';
 	document.getElementById("line2").innerHTML = '<p>Doubt trellises built from primeval reactions</p>';
 	}
 	else if (randCard2 == 26) {
-	document.getElementById("card2").innerHTML = '<img src="https://raw.githubusercontent.com/cpmmckeown/heatherWork/master/Temperance.jpg" style="width:70%; height:30%; transform:rotate(180deg);" >';
+	document.getElementById("card2").innerHTML = '<img src="https://raw.githubusercontent.com/cpmmckeown/heatherWork/master/Temperance.jpg" style="width:70%; height:30%; transform:rotate(180deg); filter:drop-shadow(-5px -5px 5px #222);" >';
 	document.getElementById("card3").innerHTML = '<img src="https://raw.githubusercontent.com/cpmmckeown/heatherWork/master/CardBack.jpg" style="width:70%; height:30%;" onclick="drawCard3(deckSize)">';
 	document.getElementById("line2").innerHTML = '<p>A person poured away cannot evaporate </p>';
 	}
 	else if (randCard2 == 27) {
-	document.getElementById("card2").innerHTML = '<img src="https://raw.githubusercontent.com/cpmmckeown/heatherWork/master/TheChariot.jpg" style="width:70%; height:30%; transform:rotate(180deg);" >';
+	document.getElementById("card2").innerHTML = '<img src="https://raw.githubusercontent.com/cpmmckeown/heatherWork/master/TheChariot.jpg" style="width:70%; height:30%; transform:rotate(180deg); filter:drop-shadow(-5px -5px 5px #222);" >';
 	document.getElementById("card3").innerHTML = '<img src="https://raw.githubusercontent.com/cpmmckeown/heatherWork/master/CardBack.jpg" style="width:70%; height:30%;" onclick="drawCard3(deckSize)">';
 	document.getElementById("line2").innerHTML = '<p>Your corona changes with you</p>';
 	}
 	else if (randCard2 == 28) {
-	document.getElementById("card2").innerHTML = '<img src="https://raw.githubusercontent.com/cpmmckeown/heatherWork/master/TheDevil.jpg" style="width:70%; height:30%; transform:rotate(180deg);" >';
+	document.getElementById("card2").innerHTML = '<img src="https://raw.githubusercontent.com/cpmmckeown/heatherWork/master/TheDevil.jpg" style="width:70%; height:30%; transform:rotate(180deg); filter:drop-shadow(-5px -5px 5px #222);" >';
 	document.getElementById("card3").innerHTML = '<img src="https://raw.githubusercontent.com/cpmmckeown/heatherWork/master/CardBack.jpg" style="width:70%; height:30%;" onclick="drawCard3(deckSize)">';
 	document.getElementById("line2").innerHTML = '<p>Your celestial lifeforce more than glinting gewgaws</p>';
 	}
 	else if (randCard2 == 29) {
-	document.getElementById("card2").innerHTML = '<img src="https://raw.githubusercontent.com/cpmmckeown/heatherWork/master/TheEmperor.jpg" style="width:70%; height:30%; transform:rotate(180deg);" >';
+	document.getElementById("card2").innerHTML = '<img src="https://raw.githubusercontent.com/cpmmckeown/heatherWork/master/TheEmperor.jpg" style="width:70%; height:30%; transform:rotate(180deg); filter:drop-shadow(-5px -5px 5px #222);" >';
 	document.getElementById("card3").innerHTML = '<img src="https://raw.githubusercontent.com/cpmmckeown/heatherWork/master/CardBack.jpg" style="width:70%; height:30%;" onclick="drawCard3(deckSize)">';
 	document.getElementById("line2").innerHTML = '<p>You are a vector in a rhizome of prelates</p>';
 	}
 	else if (randCard2 == 30) {
-	document.getElementById("card2").innerHTML = '<img src="https://raw.githubusercontent.com/cpmmckeown/heatherWork/master/TheEmpress.jpg" style="width:70%; height:30%; transform:rotate(180deg);" >';
+	document.getElementById("card2").innerHTML = '<img src="https://raw.githubusercontent.com/cpmmckeown/heatherWork/master/TheEmpress.jpg" style="width:70%; height:30%; transform:rotate(180deg); filter:drop-shadow(-5px -5px 5px #222);" >';
 	document.getElementById("card3").innerHTML = '<img src="https://raw.githubusercontent.com/cpmmckeown/heatherWork/master/CardBack.jpg" style="width:70%; height:30%;" onclick="drawCard3(deckSize)">';
 	document.getElementById("line2").innerHTML = '<p>Death forming a chassis in what you ignore</p>';
 	}
 	else if (randCard2 == 31) {
-	document.getElementById("card2").innerHTML = '<img src="https://raw.githubusercontent.com/cpmmckeown/heatherWork/master/TheFool.jpg" style="width:70%; height:30%; transform:rotate(180deg);" >';
+	document.getElementById("card2").innerHTML = '<img src="https://raw.githubusercontent.com/cpmmckeown/heatherWork/master/TheFool.jpg" style="width:70%; height:30%; transform:rotate(180deg); filter:drop-shadow(-5px -5px 5px #222);" >';
 	document.getElementById("card3").innerHTML = '<img src="https://raw.githubusercontent.com/cpmmckeown/heatherWork/master/CardBack.jpg" style="width:70%; height:30%;" onclick="drawCard3(deckSize)">';
 	document.getElementById("line2").innerHTML = '<p>Impishness undulates; a cataclysm </p>';
 	}
 	else if (randCard2 == 32) {
-	document.getElementById("card2").innerHTML = '<img src="https://raw.githubusercontent.com/cpmmckeown/heatherWork/master/TheHangedMan.jpg" style="width:70%; height:30%; transform:rotate(180deg);" >';
+	document.getElementById("card2").innerHTML = '<img src="https://raw.githubusercontent.com/cpmmckeown/heatherWork/master/TheHangedMan.jpg" style="width:70%; height:30%; transform:rotate(180deg); filter:drop-shadow(-5px -5px 5px #222);" >';
 	document.getElementById("card3").innerHTML = '<img src="https://raw.githubusercontent.com/cpmmckeown/heatherWork/master/CardBack.jpg" style="width:70%; height:30%;" onclick="drawCard3(deckSize)">';
 	document.getElementById("line2").innerHTML = '<p>Would planets mushroom had they not first kissed</p>';
 	}
 	else if (randCard2 == 33) {
-	document.getElementById("card2").innerHTML = '<img src="https://raw.githubusercontent.com/cpmmckeown/heatherWork/master/TheHermit.jpg" style="width:70%; height:30%; transform:rotate(180deg);" >';
+	document.getElementById("card2").innerHTML = '<img src="https://raw.githubusercontent.com/cpmmckeown/heatherWork/master/TheHermit.jpg" style="width:70%; height:30%; transform:rotate(180deg); filter:drop-shadow(-5px -5px 5px #222);" >';
 	document.getElementById("card3").innerHTML = '<img src="https://raw.githubusercontent.com/cpmmckeown/heatherWork/master/CardBack.jpg" style="width:70%; height:30%;" onclick="drawCard3(deckSize)">';
 	document.getElementById("line2").innerHTML = '<p>Corvidae are both curators and slaves</p>';
 	}
 	else if (randCard2 == 34) {
-	document.getElementById("card2").innerHTML = '<img src="https://raw.githubusercontent.com/cpmmckeown/heatherWork/master/TheHierophant.jpg" style="width:70%; height:30%; transform:rotate(180deg);" >';
+	document.getElementById("card2").innerHTML = '<img src="https://raw.githubusercontent.com/cpmmckeown/heatherWork/master/TheHierophant.jpg" style="width:70%; height:30%; transform:rotate(180deg); filter:drop-shadow(-5px -5px 5px #222);" >';
 	document.getElementById("card3").innerHTML = '<img src="https://raw.githubusercontent.com/cpmmckeown/heatherWork/master/CardBack.jpg" style="width:70%; height:30%;" onclick="drawCard3(deckSize)">';
 	document.getElementById("line2").innerHTML = '<p>Anosmatic to hothouse violets</p>';
 	}
 	else if (randCard2 == 35) {
-	document.getElementById("card2").innerHTML = '<img src="https://raw.githubusercontent.com/cpmmckeown/heatherWork/master/TheHighPriestess.jpg" style="width:70%; height:30%; transform:rotate(180deg);" >';
+	document.getElementById("card2").innerHTML = '<img src="https://raw.githubusercontent.com/cpmmckeown/heatherWork/master/TheHighPriestess.jpg" style="width:70%; height:30%; transform:rotate(180deg); filter:drop-shadow(-5px -5px 5px #222);" >';
 	document.getElementById("card3").innerHTML = '<img src="https://raw.githubusercontent.com/cpmmckeown/heatherWork/master/CardBack.jpg" style="width:70%; height:30%;" onclick="drawCard3(deckSize)">';
 	document.getElementById("line2").innerHTML = '<p>You are a space station at the apogee </p>';
 	}
 	else if (randCard2 == 36) {
-	document.getElementById("card2").innerHTML = '<img src="https://raw.githubusercontent.com/cpmmckeown/heatherWork/master/TheLovers.jpg" style="width:70%; height:30%; transform:rotate(180deg);" >';
+	document.getElementById("card2").innerHTML = '<img src="https://raw.githubusercontent.com/cpmmckeown/heatherWork/master/TheLovers.jpg" style="width:70%; height:30%; transform:rotate(180deg); filter:drop-shadow(-5px -5px 5px #222);" >';
 	document.getElementById("card3").innerHTML = '<img src="https://raw.githubusercontent.com/cpmmckeown/heatherWork/master/CardBack.jpg" style="width:70%; height:30%;" onclick="drawCard3(deckSize)">';
 	document.getElementById("line2").innerHTML = '<p>Take them to your vestigial forest</p>';
 	}
 	else if (randCard2 == 37) {
-	document.getElementById("card2").innerHTML = '<img src="https://raw.githubusercontent.com/cpmmckeown/heatherWork/master/TheMagician.jpg" style="width:70%; height:30%; transform:rotate(180deg);" >';
+	document.getElementById("card2").innerHTML = '<img src="https://raw.githubusercontent.com/cpmmckeown/heatherWork/master/TheMagician.jpg" style="width:70%; height:30%; transform:rotate(180deg); filter:drop-shadow(-5px -5px 5px #222);" >';
 	document.getElementById("card3").innerHTML = '<img src="https://raw.githubusercontent.com/cpmmckeown/heatherWork/master/CardBack.jpg" style="width:70%; height:30%;" onclick="drawCard3(deckSize)">';
 	document.getElementById("line2").innerHTML = '<p>Inertia a lily pad of loam</p>';
 	}
 	else if (randCard2 == 38) {
-	document.getElementById("card2").innerHTML = '<img src="https://raw.githubusercontent.com/cpmmckeown/heatherWork/master/TheMoon.jpg" style="width:70%; height:30%; transform:rotate(180deg);" >';
+	document.getElementById("card2").innerHTML = '<img src="https://raw.githubusercontent.com/cpmmckeown/heatherWork/master/TheMoon.jpg" style="width:70%; height:30%; transform:rotate(180deg); filter:drop-shadow(-5px -5px 5px #222);" >';
 	document.getElementById("card3").innerHTML = '<img src="https://raw.githubusercontent.com/cpmmckeown/heatherWork/master/CardBack.jpg" style="width:70%; height:30%;" onclick="drawCard3(deckSize)">';
 	document.getElementById("line2").innerHTML = '<p>Maul your way beyond gummy corporality </p>';
 	}
 	else if (randCard2 == 39) {
-	document.getElementById("card2").innerHTML = '<img src="https://raw.githubusercontent.com/cpmmckeown/heatherWork/master/TheStar.jpg" style="width:70%; height:30%; transform:rotate(180deg);" >';
+	document.getElementById("card2").innerHTML = '<img src="https://raw.githubusercontent.com/cpmmckeown/heatherWork/master/TheStar.jpg" style="width:70%; height:30%; transform:rotate(180deg); filter:drop-shadow(-5px -5px 5px #222);" >';
 	document.getElementById("card3").innerHTML = '<img src="https://raw.githubusercontent.com/cpmmckeown/heatherWork/master/CardBack.jpg" style="width:70%; height:30%;" onclick="drawCard3(deckSize)">';
 	document.getElementById("line2").innerHTML = '<p>Why shout in a forest at unmade paths</p>';
 	}
 	else if (randCard2 == 40) {
-	document.getElementById("card2").innerHTML = '<img src="https://raw.githubusercontent.com/cpmmckeown/heatherWork/master/TheSun.jpg" style="width:70%; height:30%; transform:rotate(180deg);" >';
+	document.getElementById("card2").innerHTML = '<img src="https://raw.githubusercontent.com/cpmmckeown/heatherWork/master/TheSun.jpg" style="width:70%; height:30%; transform:rotate(180deg); filter:drop-shadow(-5px -5px 5px #222);" >';
 	document.getElementById("card3").innerHTML = '<img src="https://raw.githubusercontent.com/cpmmckeown/heatherWork/master/CardBack.jpg" style="width:70%; height:30%;" onclick="drawCard3(deckSize)">';
 	document.getElementById("line2").innerHTML = '<p>Daffodils after winter solstice</p>';
 	}
 	else if (randCard2 == 41) {
-	document.getElementById("card2").innerHTML = '<img src="https://raw.githubusercontent.com/cpmmckeown/heatherWork/master/TheTower.jpg" style="width:70%; height:30%; transform:rotate(180deg);" >';
+	document.getElementById("card2").innerHTML = '<img src="https://raw.githubusercontent.com/cpmmckeown/heatherWork/master/TheTower.jpg" style="width:70%; height:30%; transform:rotate(180deg); filter:drop-shadow(-5px -5px 5px #222);" >';
 	document.getElementById("card3").innerHTML = '<img src="https://raw.githubusercontent.com/cpmmckeown/heatherWork/master/CardBack.jpg" style="width:70%; height:30%;" onclick="drawCard3(deckSize)">';
 	document.getElementById("line2").innerHTML = '<p>High on an outcrop, who is it that yells ‘not yet’</p>';
 	}
 	else if (randCard2 == 42) {
-	document.getElementById("card2").innerHTML = '<img src="https://raw.githubusercontent.com/cpmmckeown/heatherWork/master/TheWorld.jpg" style="width:70%; height:30%; transform:rotate(180deg);" >';
+	document.getElementById("card2").innerHTML = '<img src="https://raw.githubusercontent.com/cpmmckeown/heatherWork/master/TheWorld.jpg" style="width:70%; height:30%; transform:rotate(180deg); filter:drop-shadow(-5px -5px 5px #222);" >';
 	document.getElementById("card3").innerHTML = '<img src="https://raw.githubusercontent.com/cpmmckeown/heatherWork/master/CardBack.jpg" style="width:70%; height:30%;" onclick="drawCard3(deckSize)">';
 	document.getElementById("line2").innerHTML = '<p>Apotheosis stretched in a cosmos expanding</p>';
 	}
 	else if (randCard2 == 43) {
-	document.getElementById("card2").innerHTML = '<img src="https://raw.githubusercontent.com/cpmmckeown/heatherWork/master/TheWheelofFortune.jpg" style="width:70%; height:30%; transform:rotate(180deg);" >';
+	document.getElementById("card2").innerHTML = '<img src="https://raw.githubusercontent.com/cpmmckeown/heatherWork/master/TheWheelofFortune.jpg" style="width:70%; height:30%; transform:rotate(180deg); filter:drop-shadow(-5px -5px 5px #222);" >';
 	document.getElementById("card3").innerHTML = '<img src="https://raw.githubusercontent.com/cpmmckeown/heatherWork/master/CardBack.jpg" style="width:70%; height:30%;" onclick="drawCard3(deckSize)">';
 	document.getElementById("line2").innerHTML = '<p>Don’t let events look back at you </p>';
 	}	
@@ -810,100 +872,112 @@ function drawCard3(deckSize)
 	document.getElementById("line3").innerHTML = '<p>When you walk a beginning meets a beginning</p>';
 	}
 	else if (randCard3 == 22) {
-	document.getElementById("card3").innerHTML = '<img src="https://raw.githubusercontent.com/cpmmckeown/heatherWork/master/Death.jpg" style="width:70%; height:30%; transform:rotate(180deg);" >';
+	document.getElementById("card3").innerHTML = '<img src="https://raw.githubusercontent.com/cpmmckeown/heatherWork/master/Death.jpg" style="width:70%; height:30%; transform:rotate(180deg); filter:drop-shadow(-5px -5px 5px #222);" >';
 	document.getElementById("line3").innerHTML = '<p>A still image is a slow knife</p>';
 	}
 	else if (randCard3 == 23) {
-	document.getElementById("card3").innerHTML = '<img src="https://raw.githubusercontent.com/cpmmckeown/heatherWork/master/Judgement.jpg" style="width:70%; height:30%; transform:rotate(180deg);" >';
+	document.getElementById("card3").innerHTML = '<img src="https://raw.githubusercontent.com/cpmmckeown/heatherWork/master/Judgement.jpg" style="width:70%; height:30%; transform:rotate(180deg); filter:drop-shadow(-5px -5px 5px #222);" >';
 	document.getElementById("line3").innerHTML = '<p>If your town wasn’t real, what then</p>';
 	}
 	else if (randCard3 == 24) {
-	document.getElementById("card3").innerHTML = '<img src="https://raw.githubusercontent.com/cpmmckeown/heatherWork/master/Justice.jpg" style="width:70%; height:30%; transform:rotate(180deg);">';
+	document.getElementById("card3").innerHTML = '<img src="https://raw.githubusercontent.com/cpmmckeown/heatherWork/master/Justice.jpg" style="width:70%; height:30%; transform:rotate(180deg); filter:drop-shadow(-5px -5px 5px #222);">';
 	document.getElementById("line3").innerHTML = '<p>You cannot protect by writing in hieroglyphs</p>';
 	}
 	else if (randCard3 == 25) {
-	document.getElementById("card3").innerHTML = '<img src="https://raw.githubusercontent.com/cpmmckeown/heatherWork/master/Strength.jpg" style="width:70%; height:30%; transform:rotate(180deg);" >';
+	document.getElementById("card3").innerHTML = '<img src="https://raw.githubusercontent.com/cpmmckeown/heatherWork/master/Strength.jpg" style="width:70%; height:30%; transform:rotate(180deg); filter:drop-shadow(-5px -5px 5px #222);" >';
 	document.getElementById("line3").innerHTML = '<p>Doubt trellises built from primeval reactions</p>';
 	}
 	else if (randCard3 == 26) {
-	document.getElementById("card3").innerHTML = '<img src="https://raw.githubusercontent.com/cpmmckeown/heatherWork/master/Temperance.jpg" style="width:70%; height:30%; transform:rotate(180deg);" >';
+	document.getElementById("card3").innerHTML = '<img src="https://raw.githubusercontent.com/cpmmckeown/heatherWork/master/Temperance.jpg" style="width:70%; height:30%; transform:rotate(180deg); filter:drop-shadow(-5px -5px 5px #222);" >';
 	document.getElementById("line3").innerHTML = '<p>A person poured away cannot evaporate </p>';
 	}
 	else if (randCard3 == 27) {
-	document.getElementById("card3").innerHTML = '<img src="https://raw.githubusercontent.com/cpmmckeown/heatherWork/master/TheChariot.jpg" style="width:70%; height:30%; transform:rotate(180deg);" >';
+	document.getElementById("card3").innerHTML = '<img src="https://raw.githubusercontent.com/cpmmckeown/heatherWork/master/TheChariot.jpg" style="width:70%; height:30%; transform:rotate(180deg); filter:drop-shadow(-5px -5px 5px #222);" >';
 	document.getElementById("line3").innerHTML = '<p>Your corona changes with you</p>';
 	}
 	else if (randCard3 == 28) {
-	document.getElementById("card3").innerHTML = '<img src="https://raw.githubusercontent.com/cpmmckeown/heatherWork/master/TheDevil.jpg" style="width:70%; height:30%; transform:rotate(180deg);" >';
+	document.getElementById("card3").innerHTML = '<img src="https://raw.githubusercontent.com/cpmmckeown/heatherWork/master/TheDevil.jpg" style="width:70%; height:30%; transform:rotate(180deg); filter:drop-shadow(-5px -5px 5px #222);" >';
 	document.getElementById("line3").innerHTML = '<p>Your celestial lifeforce more than glinting gewgaws</p>';
 	}
 	else if (randCard3 == 29) {
-	document.getElementById("card3").innerHTML = '<img src="https://raw.githubusercontent.com/cpmmckeown/heatherWork/master/TheEmperor.jpg" style="width:70%; height:30%; transform:rotate(180deg);" >';
+	document.getElementById("card3").innerHTML = '<img src="https://raw.githubusercontent.com/cpmmckeown/heatherWork/master/TheEmperor.jpg" style="width:70%; height:30%; transform:rotate(180deg); filter:drop-shadow(-5px -5px 5px #222);" >';
 	document.getElementById("line3").innerHTML = '<p>You are a vector in a rhizome of prelates</p>';
 	}
 	else if (randCard3 == 30) {
-	document.getElementById("card3").innerHTML = '<img src="https://raw.githubusercontent.com/cpmmckeown/heatherWork/master/TheEmpress.jpg" style="width:70%; height:30%; transform:rotate(180deg);" >';
+	document.getElementById("card3").innerHTML = '<img src="https://raw.githubusercontent.com/cpmmckeown/heatherWork/master/TheEmpress.jpg" style="width:70%; height:30%; transform:rotate(180deg); filter:drop-shadow(-5px -5px 5px #222);" >';
 	document.getElementById("line3").innerHTML = '<p>Death forming a chassis in what you ignore</p>';
 	}
 	else if (randCard3 == 31) {
-	document.getElementById("card3").innerHTML = '<img src="https://raw.githubusercontent.com/cpmmckeown/heatherWork/master/TheFool.jpg" style="width:70%; height:30%; transform:rotate(180deg);" >';
+	document.getElementById("card3").innerHTML = '<img src="https://raw.githubusercontent.com/cpmmckeown/heatherWork/master/TheFool.jpg" style="width:70%; height:30%; transform:rotate(180deg); filter:drop-shadow(-5px -5px 5px #222);" >';
 	document.getElementById("line3").innerHTML = '<p>Impishness undulates; a cataclysm </p>';
 	}
 	else if (randCard3 == 32) {
-	document.getElementById("card3").innerHTML = '<img src="https://raw.githubusercontent.com/cpmmckeown/heatherWork/master/TheHangedMan.jpg" style="width:70%; height:30%; transform:rotate(180deg);" >';
+	document.getElementById("card3").innerHTML = '<img src="https://raw.githubusercontent.com/cpmmckeown/heatherWork/master/TheHangedMan.jpg" style="width:70%; height:30%; transform:rotate(180deg); filter:drop-shadow(-5px -5px 5px #222);" >';
 	document.getElementById("line3").innerHTML = '<p>Would planets mushroom had they not first kissed</p>';
 	}
 	else if (randCard3 == 33) {
-	document.getElementById("card3").innerHTML = '<img src="https://raw.githubusercontent.com/cpmmckeown/heatherWork/master/TheHermit.jpg" style="width:70%; height:30%; transform:rotate(180deg);" >';
+	document.getElementById("card3").innerHTML = '<img src="https://raw.githubusercontent.com/cpmmckeown/heatherWork/master/TheHermit.jpg" style="width:70%; height:30%; transform:rotate(180deg); filter:drop-shadow(-5px -5px 5px #222);" >';
 	document.getElementById("line3").innerHTML = '<p>Corvidae are both curators and slaves</p>';
 	}
 	else if (randCard3 == 34) {
-	document.getElementById("card3").innerHTML = '<img src="https://raw.githubusercontent.com/cpmmckeown/heatherWork/master/TheHierophant.jpg" style="width:70%; height:30%; transform:rotate(180deg);" >';
+	document.getElementById("card3").innerHTML = '<img src="https://raw.githubusercontent.com/cpmmckeown/heatherWork/master/TheHierophant.jpg" style="width:70%; height:30%; transform:rotate(180deg); filter:drop-shadow(-5px -5px 5px #222);" >';
 	document.getElementById("line3").innerHTML = '<p>Anosmatic to hothouse violets</p>';
 	}
 	else if (randCard3 == 35) {
-	document.getElementById("card3").innerHTML = '<img src="https://raw.githubusercontent.com/cpmmckeown/heatherWork/master/TheHighPriestess.jpg" style="width:70%; height:30%; transform:rotate(180deg);" >';
+	document.getElementById("card3").innerHTML = '<img src="https://raw.githubusercontent.com/cpmmckeown/heatherWork/master/TheHighPriestess.jpg" style="width:70%; height:30%; transform:rotate(180deg); filter:drop-shadow(-5px -5px 5px #222);" >';
 	document.getElementById("line3").innerHTML = '<p>You are a space station at the apogee </p>';
 	}
 	else if (randCard3 == 36) {
-	document.getElementById("card3").innerHTML = '<img src="https://raw.githubusercontent.com/cpmmckeown/heatherWork/master/TheLovers.jpg" style="width:70%; height:30%; transform:rotate(180deg);" >';
+	document.getElementById("card3").innerHTML = '<img src="https://raw.githubusercontent.com/cpmmckeown/heatherWork/master/TheLovers.jpg" style="width:70%; height:30%; transform:rotate(180deg); filter:drop-shadow(-5px -5px 5px #222);" >';
 	document.getElementById("line3").innerHTML = '<p>Take them to your vestigial forest</p>';
 	}
 	else if (randCard3 == 37) {
-	document.getElementById("card3").innerHTML = '<img src="https://raw.githubusercontent.com/cpmmckeown/heatherWork/master/TheMagician.jpg" style="width:70%; height:30%; transform:rotate(180deg);" >';
+	document.getElementById("card3").innerHTML = '<img src="https://raw.githubusercontent.com/cpmmckeown/heatherWork/master/TheMagician.jpg" style="width:70%; height:30%; transform:rotate(180deg); filter:drop-shadow(-5px -5px 5px #222);" >';
 	document.getElementById("line3").innerHTML = '<p>Inertia a lily pad of loam</p>';
 	}
 	else if (randCard3 == 38) {
-	document.getElementById("card3").innerHTML = '<img src="https://raw.githubusercontent.com/cpmmckeown/heatherWork/master/TheMoon.jpg" style="width:70%; height:30%; transform:rotate(180deg);" >';
+	document.getElementById("card3").innerHTML = '<img src="https://raw.githubusercontent.com/cpmmckeown/heatherWork/master/TheMoon.jpg" style="width:70%; height:30%; transform:rotate(180deg); filter:drop-shadow(-5px -5px 5px #222);" >';
 	document.getElementById("line3").innerHTML = '<p>Maul your way beyond gummy corporality </p>';
 	}
 	else if (randCard3 == 39) {
-	document.getElementById("card3").innerHTML = '<img src="https://raw.githubusercontent.com/cpmmckeown/heatherWork/master/TheStar.jpg" style="width:70%; height:30%; transform:rotate(180deg);" >';
+	document.getElementById("card3").innerHTML = '<img src="https://raw.githubusercontent.com/cpmmckeown/heatherWork/master/TheStar.jpg" style="width:70%; height:30%; transform:rotate(180deg); filter:drop-shadow(-5px -5px 5px #222);" >';
 	document.getElementById("line3").innerHTML = '<p>Why shout in a forest at unmade paths</p>';
 	}
 	else if (randCard3 == 40) {
-	document.getElementById("card3").innerHTML = '<img src="https://raw.githubusercontent.com/cpmmckeown/heatherWork/master/TheSun.jpg" style="width:70%; height:30%; transform:rotate(180deg);" >';
+	document.getElementById("card3").innerHTML = '<img src="https://raw.githubusercontent.com/cpmmckeown/heatherWork/master/TheSun.jpg" style="width:70%; height:30%; transform:rotate(180deg); filter:drop-shadow(-5px -5px 5px #222);" >';
 	document.getElementById("line3").innerHTML = '<p>Daffodils after winter solstice</p>';
 	}
 	else if (randCard3 == 41) {
-	document.getElementById("card3").innerHTML = '<img src="https://raw.githubusercontent.com/cpmmckeown/heatherWork/master/TheTower.jpg" style="width:70%; height:30%; transform:rotate(180deg);" >';
+	document.getElementById("card3").innerHTML = '<img src="https://raw.githubusercontent.com/cpmmckeown/heatherWork/master/TheTower.jpg" style="width:70%; height:30%; transform:rotate(180deg); filter:drop-shadow(-5px -5px 5px #222);" >';
 	document.getElementById("line3").innerHTML = '<p>High on an outcrop, who is it that yells ‘not yet’</p>';
 	}
 	else if (randCard3 == 42) {
-	document.getElementById("card3").innerHTML = '<img src="https://raw.githubusercontent.com/cpmmckeown/heatherWork/master/TheWorld.jpg" style="width:70%; height:30%; transform:rotate(180deg);" >';
+	document.getElementById("card3").innerHTML = '<img src="https://raw.githubusercontent.com/cpmmckeown/heatherWork/master/TheWorld.jpg" style="width:70%; height:30%; transform:rotate(180deg); filter:drop-shadow(-5px -5px 5px #222);" >';
 	document.getElementById("line3").innerHTML = '<p>Apotheosis stretched in a cosmos expanding</p>';
 	}
 	else if (randCard3 == 43) {
-	document.getElementById("card3").innerHTML = '<img src="https://raw.githubusercontent.com/cpmmckeown/heatherWork/master/TheWheelofFortune.jpg" style="width:70%; height:30%; transform:rotate(180deg);" >';
+	document.getElementById("card3").innerHTML = '<img src="https://raw.githubusercontent.com/cpmmckeown/heatherWork/master/TheWheelofFortune.jpg" style="width:70%; height:30%; transform:rotate(180deg); filter:drop-shadow(-5px -5px 5px #222);" >';
 	document.getElementById("line3").innerHTML = '<p>Don’t let events look back at you </p>';
 	}	
 	
-	//I THINK THIS WILL WORK?
-	document.getElementById("textSpace").onclick = function(){post();}
+	//CLICKING ON THE POEM WILL CURRENTLY POST TO FACEBOOK BUT I THINK IT 
+	//WOULD BE BETTER TO CLEAR THE SCREEN AND THEN ASK YOU TO POST TO FB OR TWIT.
+	document.getElementById("card1").style.cursor = "default";
+	document.getElementById("card2").style.cursor = "default";
+	document.getElementById("card3").style.cursor = "default";
+	document.getElementById("textSpace").style.cursor = "pointer";
+	document.getElementById("textSpace").onclick = function(){postButtons();}
 }
  
-//I NEED TWO MORE FUNCTIONS - 1 TO POST THE THING TO FACEBOOK WHEN THE POEM IS CLICKED. 2 TO RELOAD THE PAGE.
- function post() 
+//ADD THE POST BUTTONS
+//ADD THEM TO THE SOCIAL BIT.
+function postButtons() 
+{
+ document.getElementById("postButtons").innerHTML = '<div class="col-" style="width:33%; margin-left:6%;"><u style="cursor:pointer;" onclick="postFB()">Share to Facebook</u></div><div class="col-" style="width:28%;"><u style="cursor:pointer;" onclick="location.reload();">Another Reading?</u></div><div class="col-" id="twitShare" style="width:30%; margin-left:2%;"><u style="cursor:pointer;" onclick="postTwit()">Share to Twitter</u></div>';
+}
+ 
+//POST TO FB
+ function postFB() 
  { 
  var poem = document.getElementById("line1").textContent;
  poem += '\n';
@@ -920,7 +994,25 @@ function drawCard3(deckSize)
 }, function(response){});
  }
  
- function reload() {} 
+//POST TO TWITTER
+function postTwit(){
+var poem = document.getElementById("line1").textContent;
+ poem += '\n';
+ poem += document.getElementById("line2").textContent;
+ poem += '\n';
+ poem += document.getElementById("line3").textContent;
+ poem.replace(/[^0-9\.]+/,'');
+ poem.replace(/[^0-9\.]+/, '');
+twttr.widgets.createShareButton(
+  '/',
+  document.getElementById('twitShare'),
+  {
+    text: poem
+  }
+);}
+ 
+//RELOAD THE PAGE
+function reload() {} 
  
  
 </script>
