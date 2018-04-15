@@ -101,7 +101,10 @@ animation-iteration-count: 1, infinite;
 .col-menu{width:40%; margin-left: 5%;}
 .col-title{text-align: left; font-size: 2em;}
 }
-
+@media screen and (max-width: 300px)
+{
+.suggestions{margin-left: -20%;}
+}
 </style>
 </head>
 <body>
@@ -271,7 +274,7 @@ function closeFloater()
 	document.getElementById("menu").innerHTML = '';
 	document.getElementById("images").innerHTML = '<img id="moon" src="C:/Users/Admin/Web_Design/Heather/moon.svg" style="width:20%; height:20%; margin-left:42%; margin-top: -10%" onclick="threeCardView(43)">';
 	document.getElementById("postButtons").innerHTML = '<img id="stars" src="C:/Users/Admin/Web_Design/Heather/stars.svg" style="width:20%; height:20%; margin-left:42%; margin-top: 2%" onclick="threeCardView(43)">';
-	document.getElementById("textSpace").innerHTML = '<p><p>Think about a question you might have for the Tarot Poet<br>It will read the cards from left to right. You can interpret the poem’s lines in<br>the following ways:</p><p><ul style="list-style-type:none"><li>• Past, Present, Future<li>• You, Your Path, Your Potential<li>• You, Relationship, Partner<li>• Situation, Action, Outcome<li>• Idea, Process, Aspiration</ul></p>';
+	document.getElementById("textSpace").innerHTML = '<p><p>Think about a question you might have for the Tarot Poet<br>It will read the cards from left to right. You can interpret the poem’s lines in<br>the following ways:</p><p><ul class="suggestions" style="list-style-type:none"><li>• Past, Present, Future<li>• You, Your Path, Your Potential<li>• You, Relationship, Partner<li>• Situation, Action, Outcome<li>• Idea, Process, Aspiration</ul></p>';
 	//NOT EXACTLY ELEGANT BUT I HAVE FORCED THESE TO NULL
 	try {
     document.getElementById("yes").innerHTML = ''; 
@@ -1013,10 +1016,10 @@ var poem = document.getElementById("line1").textContent;
  poem.replace(/[^0-9\.]+/,'');
  poem.replace(/[^0-9\.]+/, '');
 twttr.widgets.createShareButton(
-  '/',
+  'http://poettarotreader.com',
   document.getElementById('twitShare'),
   {
-    text: poem
+    text: poem + "\n"
   }
 );}
  
