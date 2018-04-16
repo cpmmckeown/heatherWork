@@ -47,6 +47,10 @@ body{background: linear-gradient(rgba(230,230,250,1), rgba(230,230,250,0)); back
 .col-text
 {width:80%; text-align:center;}
 
+/*SHARE BUTTONS*/
+.col-shareButton
+{width: 30%; text-align: center; margin-left: 3%;}
+
 /*CHANGE MOUSE TO POINTER ON CLICKABLE ELEMENTS*/
 #stars {cursor:pointer; animation-duration: 2s; animation-iteration-count: 1; animation-name: appear;}
 #moon {cursor:pointer; animation-duration: 2s; animation-iteration-count: 1; animation-name: appear;}
@@ -985,7 +989,7 @@ function drawCard3(deckSize)
 //ADD THEM TO THE SOCIAL BIT.
 function postButtons() 
 {
- document.getElementById("postButtons").innerHTML = '<div class="col-" style="width:33%; margin-left:6%;"><u style="cursor:pointer;" onclick="postFB()">Share to Facebook</u></div><div class="col-" style="width:28%;"><u style="cursor:pointer;" onclick="location.reload();">Another Reading?</u></div><div class="col-" id="twitShare" style="width:30%; margin-left:2%;"><u style="cursor:pointer;" onclick="postTwit()">Share to Twitter</u></div>';
+ document.getElementById("postButtons").innerHTML = '<div class="col-shareButton"><u style="cursor:pointer;" onclick="postFB()">Share to Facebook</u></div><div class="col-shareButton"><u style="cursor:pointer;" onclick="location.reload();">Another Reading?</u></div><div class="col-shareButton" id="twitShare"><u style="cursor:pointer;" onclick="postTwit()">Share to Twitter</u></div>';
 }
  
 //POST TO FB
@@ -1007,21 +1011,30 @@ function postButtons()
  }
  
 //POST TO TWITTER
-function postTwit(){
-var poem = document.getElementById("line1").textContent;
- poem += '\n';
- poem += document.getElementById("line2").textContent;
- poem += '\n';
- poem += document.getElementById("line3").textContent;
- poem.replace(/[^0-9\.]+/,'');
- poem.replace(/[^0-9\.]+/, '');
-twttr.widgets.createShareButton(
-  'http://poettarotreader.com',
-  document.getElementById('twitShare'),
-  {
-    text: poem + "\n"
-  }
-);}
+var pT = false;
+function postTwit()
+{
+	if (pT == false)
+	{
+		pT = true;
+		var poem = document.getElementById("line1").textContent;
+		poem += '\n';
+		poem += document.getElementById("line2").textContent;
+		poem += '\n';
+		poem += document.getElementById("line3").textContent;
+		poem.replace(/[^0-9\.]+/,'');
+		poem.replace(/[^0-9\.]+/, '');
+			twttr.widgets.createShareButton
+			(
+			'http://poettarotreader.com',
+			document.getElementById('twitShare'),
+			{
+				text: poem + "\n"
+			}
+			);
+	}
+	else {;}
+}
  
 //RELOAD THE PAGE
 function reload() {} 
