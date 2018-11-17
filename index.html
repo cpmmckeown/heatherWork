@@ -16,12 +16,13 @@
 /*APPLY TO ALL*/
 * 
 {box-sizing: border-box; font-family: 'Montserrat', sans-serif;}
+body{color: #ffffff;}
 
 /*IMAGES - SIZES AND SHADOWS*/
 img{margin-top: 0%; margin-left:25%; filter: drop-shadow(5px 5px 5px #222);}
 
 /*BACKGROUND COLOUR*/
-body{background: linear-gradient(rgba(230,230,250,1), rgba(230,230,250,0)); background-repeat: no-repeat;}
+body{background: #2f2f2f;); background-repeat: no-repeat;}
 
 /*APPLYING TO ALL COLUMNS*/ /* ***ALWAYS DO THIS BORDER WIDTH THING! IT ALLOWS YOU TO TOGGLE A GRID VIEW*** */
 [class*="col-"]{float: left; padding 15px; border-style:solid; border-width: 0px; min-height:1em;}
@@ -72,10 +73,11 @@ body{background: linear-gradient(rgba(230,230,250,1), rgba(230,230,250,0)); back
 #contactInfo {cursor:pointer; animation-duration: 2s; animation-iteration-count: 1; animation-name: appear;}
 
 /*FLOATERS*/
+/*ANIMATION MAKES THE ABOUT AND CONTACT TABS APPEAR/DISAPPER*/
 .openFloater
 {
 overflow: auto;
-z-index: 10; padding: 10px; padding-right: 20%; width:60%; max-height: 600px; position: fixed; margin-left:20%; margin-top: 8%; background-color:#ffffff; cursor:pointer;
+z-index: 10; padding: 10px; padding-right: 20%; width:60%; max-height: 600px; position: fixed; margin-left:20%; margin-top: 8%; background-color:#000000; cursor:pointer;
 animation: 1s 1 appear;
 }
 
@@ -84,6 +86,13 @@ animation: 1s 1 appear;
 
 /*ANIMATION TO MAKE THE ROCK LAMP GROW*/
 #rockLamp 
+{
+animation-name: appear, glow;
+animation-duration: 5s, 4s;
+animation-iteration-count: 1, infinite;
+}
+
+#moon 
 {
 animation-name: appear, glow;
 animation-duration: 5s, 4s;
@@ -137,7 +146,7 @@ animation-iteration-count: 1, infinite;
 
 <div class="row" id="image-row">
 <div class="col-border1"></div>
-<div class="col-images" id="images"><img id="rockLamp" src="https://github.com/cpmmckeown/heatherWork/blob/master/poettarotreader/Rock%20Salt%20Lamp.png?raw=true" style="width:30%; height:30%; box-shadow: 0px 0px 0px #ffffff ; margin-left:35%;"></div>
+<div class="col-images" id="images"><img id="rockLamp" onclick="enter()" src="https://raw.githubusercontent.com/cpmmckeown/heatherWork/master/logo.png" style="width:30%; height:30%; box-shadow: 0px 0px 0px #ffffff ; margin-left:35%;"></div>
 <div class="col-border2"></div>
 </div>
 
@@ -246,7 +255,7 @@ function closeFloater()
 	{
 	aboutOpen = true;
 	loopOpenFloaters();
-	document.getElementById("aboutInfo").innerHTML = '<p><h1>ABOUT</h1><p><p>Poet Tarot Reader produces poems as tarot readings. <p>When a visitor shuffles the cards, a calculation occurs to determine which three cards will present for them from the Major Arcana, including whether any cards are reversed. </p><p>Poetic lines that offer exposition on each card appear.</p><p>These accumulate to form an individual 3-line poem.</p><p>The generated poem is offered to the visitor to interpret, weaving meaning across lines.</p><p>Poet Tarot Reader realises a spiritual alchemy with poetic lines as tarot cards and poems as tarot card readings.</p><p>Poet Tarot Reader uses cards by Norbert Lösche which you can purchase <a href="http://www.tarotworld.com/shop/searchresult/c11982fd14a2a5fc4e527ff584ee9d1a.html?tx_kfproducts_pi1%5BshowUid%5D=2">here</a>.</p><p>Illustrations from Cosmic Tarot reproduced by permission of AGM-Urania/Koenigsfurt-Urania Verlag, Germany, © AGM-Urania/Koenigsfurt-Urania Verlag. Further reproduction prohibited.</p></div>';
+	document.getElementById("aboutInfo").innerHTML = '<p><h1>ABOUT</h1></p><p>**EXPANDING SOON TO INCLUDE MINOR ARCANA**</p><p>Poet Tarot</p><p> Reader produces poems as tarot readings.</p><p>Poet Tarot Reader uses cards by Norbert Lösche which you can purchase <a href="http://www.tarotworld.com/shop/searchresult/c11982fd14a2a5fc4e527ff584ee9d1a.html?tx_kfproducts_pi1%5BshowUid%5D=2">here</a>.</p><p>Illustrations from Cosmic Tarot reproduced by permission of AGM-Urania/Koenigsfurt-Urania Verlag, Germany, © AGM-Urania/Koenigsfurt-Urania Verlag. Further reproduction prohibited.</p></div>';
 	document.getElementById("aboutInfo").onclick = function() {closeFloater()}
 	}
   }
@@ -260,7 +269,7 @@ function closeFloater()
 	{
 	contactOpen = true;
 	loopOpenFloaters();
-	document.getElementById("aboutInfo").innerHTML = '<p><h1>CONTACT</h1></p><p>Poet Tarot Reader was created by Heather O’Donnell and Conor Mckeown. </p><p>Heather O’Donnell is a poet and Conor Mckeown is an academic and game developer.</p><p><a href="mailto:heatherodonnell28@gmail.com?Subject=Poet%20Tarot%20Reader" target="_top">Contact Us Via Email</a></p></div>';
+	document.getElementById("aboutInfo").innerHTML = '<p><h1>CONTACT</h1></p><p>Tarot Reading & Poetry: Heather O’Donnell</br>helloheatherodonnell@gmail.com</p><p>Programming: Conor McKeown</br>cpmmckeown@gmail.com</p></div>';
 	document.getElementById("aboutInfo").onclick = function() {closeFloater()}
 	}
  }
@@ -271,7 +280,7 @@ function closeFloater()
 	closeFloater();
 	document.getElementById("title").innerHTML = '';
 	document.getElementById("menu").innerHTML = '';
-	document.getElementById("images").innerHTML = '<img id="rockLamp" src="https://github.com/cpmmckeown/heatherWork/blob/master/poettarotreader/Rock%20Salt%20Lamp.png?raw=true" style="width:30%; height:30%; box-shadow: 0px 0px 0px #ffffff ; margin-left:35%">';
+	document.getElementById("images").innerHTML = '<img id="rockLamp" src="https://raw.githubusercontent.com/cpmmckeown/heatherWork/master/logo.png" style="width:30%; height:30%; box-shadow: 0px 0px 0px #ffffff ; margin-left:35%;" style="width:30%; height:30%; box-shadow: 0px 0px 0px #ffffff ; margin-left:35%">';
 	document.getElementById("enter").innerHTML = '<p id="enter">Would you like your reading to contain reversed cards?</p>';
 	document.getElementById("yes").innerHTML = '<p id="yes">yes</p>'; 
 	document.getElementById("no").innerHTML = '<p id="no">no</p>'; 
@@ -282,9 +291,9 @@ function closeFloater()
 	{
 	document.getElementById("title").innerHTML = '';
 	document.getElementById("menu").innerHTML = '';
-	document.getElementById("images").innerHTML = '<img id="moon" src="data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGLTgiIHN0YW5kYWxvbmU9Im5vIj8+Cjwh%0D%0ARE9DVFlQRSBzdmcgUFVCTElDICItLy9XM0MvL0RURCBTVkcgMS4xLy9FTiIgImh0dHA6Ly93d3cu%0D%0AdzMub3JnL0dyYXBoaWNzL1NWRy8xLjEvRFREL3N2ZzExLmR0ZCI+CjxzdmcgdmVyc2lvbj0iMS4x%0D%0AIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHhtbG5zOnhsaW5rPSJodHRwOi8v%0D%0Ad3d3LnczLm9yZy8xOTk5L3hsaW5rIiBwcmVzZXJ2ZUFzcGVjdFJhdGlvPSJ4TWlkWU1pZCBtZWV0%0D%0AIiB2aWV3Qm94PSIwIDAgNjQwIDY0MCIgd2lkdGg9IjY0MCIgaGVpZ2h0PSI2NDAiPjxkZWZzPjxw%0D%0AYXRoIGQ9Ik0zODguNDIgMTY3LjQ0TDM5My45NSAxNjkuODJMMzk5LjM1IDE3Mi40TDQwNC42NCAx%0D%0ANzUuMTdMNDA5LjggMTc4LjEzTDQxNC44MyAxODEuMjhMNDE5LjcyIDE4NC42TDQyNC40OCAxODgu%0D%0AMUw0MjkuMDggMTkxLjc3TDQzMy41NCAxOTUuNkw0MzcuODQgMTk5LjZMNDQxLjk4IDIwMy43NUw0%0D%0ANDUuOTUgMjA4LjA1TDQ0OS43NiAyMTIuNDlMNDUzLjM4IDIxNy4wOEw0NTYuODMgMjIxLjhMNDYw%0D%0ALjA5IDIyNi42NUw0NjMuMTYgMjMxLjYzTDQ2Ni4wMyAyMzYuNzNMNDY4LjcgMjQxLjk1TDQ3MS4x%0D%0ANyAyNDcuMjhMNDczLjQzIDI1Mi43Mkw0NzUuNDYgMjU4LjI1TDQ3Ny4yOCAyNjMuODlMNDc4Ljg3%0D%0AIDI2OS42MUw0ODAuMjMgMjc1LjQzTDQ4MS4zNiAyODEuMzNMNDgyLjI0IDI4Ny4zTDQ4Mi44OCAy%0D%0AOTMuMzVMNDgzLjI3IDI5OS40Nkw0ODMuNCAzMDUuNjRMNDgzLjI3IDMxMS44Mkw0ODIuODggMzE3%0D%0ALjk0TDQ4Mi4yNCAzMjMuOTlMNDgxLjM2IDMyOS45Nkw0ODAuMjMgMzM1Ljg2TDQ3OC44NyAzNDEu%0D%0ANjdMNDc3LjI4IDM0Ny40TDQ3NS40NiAzNTMuMDNMNDczLjQzIDM1OC41N0w0NzEuMTcgMzY0LjAx%0D%0ATDQ2OC43IDM2OS4zNEw0NjYuMDMgMzc0LjU1TDQ2My4xNiAzNzkuNjVMNDYwLjA5IDM4NC42M0w0%0D%0ANTYuODMgMzg5LjQ5TDQ1My4zOCAzOTQuMjFMNDQ5Ljc2IDM5OC43OUw0NDUuOTUgNDAzLjI0TDQ0%0D%0AMS45OCA0MDcuNTRMNDM3Ljg0IDQxMS42OUw0MzMuNTQgNDE1LjY4TDQyOS4wOCA0MTkuNTJMNDI0%0D%0ALjQ4IDQyMy4xOUw0MTkuNzIgNDI2LjY5TDQxNC44MyA0MzAuMDFMNDA5LjggNDMzLjE2TDQwNC42%0D%0ANCA0MzYuMTJMMzk5LjM1IDQzOC44OUwzOTMuOTUgNDQxLjQ3TDM4OC40MiA0NDMuODVMMzgyLjc5%0D%0AIDQ0Ni4wMkwzNzcuMDUgNDQ3Ljk5TDM3MS4yMSA0NDkuNzVMMzY1LjI4IDQ1MS4yOEwzNTkuMjUg%0D%0ANDUyLjU5TDM1My4xNCA0NTMuNjhMMzQ2Ljk1IDQ1NC41M0wzNDAuNjggNDU1LjE1TDMzNC4zNCA0%0D%0ANTUuNTJMMzI3Ljk0IDQ1NS42NEwzMjEuNTMgNDU1LjUyTDMxNS4xOSA0NTUuMTVMMzA4LjkzIDQ1%0D%0ANC41M0wzMDIuNzMgNDUzLjY4TDI5Ni42MiA0NTIuNTlMMjkwLjYgNDUxLjI4TDI4NC42NiA0NDku%0D%0ANzVMMjc4LjgyIDQ0Ny45OUwyNzMuMDggNDQ2LjAyTDI2Ny40NSA0NDMuODVMMjYxLjkyIDQ0MS40%0D%0AN0wyNTYuNTIgNDM4Ljg5TDI1MS4yMyA0MzYuMTJMMjQ2LjA3IDQzMy4xNkwyNDEuMDQgNDMwLjAx%0D%0ATDIzNi4xNSA0MjYuNjlMMjMxLjM5IDQyMy4xOUwyMjYuNzkgNDE5LjUyTDIyMi4zMyA0MTUuNjhM%0D%0AMjIwLjEgNDEzLjYxTDIyNS4zNSA0MTUuMTlMMjMxLjI5IDQxNi43M0wyMzcuMzEgNDE4LjA0TDI0%0D%0AMy40MyA0MTkuMTJMMjQ5LjYyIDQxOS45OEwyNTUuODkgNDIwLjU5TDI2Mi4yMiA0MjAuOTZMMjY4%0D%0ALjYzIDQyMS4wOUwyNzUuMDMgNDIwLjk2TDI4MS4zNyA0MjAuNTlMMjg3LjY0IDQxOS45OEwyOTMu%0D%0AODMgNDE5LjEyTDI5OS45NCA0MTguMDRMMzA1Ljk3IDQxNi43M0wzMTEuOSA0MTUuMTlMMzE3Ljc0%0D%0AIDQxMy40NEwzMjMuNDggNDExLjQ3TDMyOS4xMiA0MDkuMjlMMzM0LjY0IDQwNi45MUwzNDAuMDUg%0D%0ANDA0LjM0TDM0NS4zMyA0MDEuNTZMMzUwLjQ5IDM5OC42TDM1NS41MiAzOTUuNDZMMzYwLjQyIDM5%0D%0AMi4xM0wzNjUuMTcgMzg4LjYzTDM2OS43OCAzODQuOTZMMzc0LjIzIDM4MS4xM0wzNzguNTMgMzc3%0D%0ALjEzTDM4Mi42NyAzNzIuOThMMzg2LjY1IDM2OC42OEwzOTAuNDUgMzY0LjI0TDM5NC4wOCAzNTku%0D%0ANjVMMzk3LjUyIDM1NC45M0w0MDAuNzggMzUwLjA4TDQwMy44NSAzNDUuMUw0MDYuNzMgMzQwTDQw%0D%0AOS40IDMzNC43OEw0MTEuODYgMzI5LjQ1TDQxNC4xMiAzMjQuMDJMNDE2LjE2IDMxOC40OEw0MTcu%0D%0AOTggMzEyLjg0TDQxOS41NyAzMDcuMTJMNDIwLjkzIDMwMS4zTDQyMi4wNSAyOTUuNDFMNDIyLjk0%0D%0AIDI4OS40M0w0MjMuNTcgMjgzLjM4TDQyMy45NiAyNzcuMjdMNDI0LjA5IDI3MS4wOUw0MjMuOTYg%0D%0AMjY0LjkxTDQyMy41NyAyNTguNzlMNDIyLjk0IDI1Mi43NUw0MjIuMDUgMjQ2Ljc3TDQyMC45MyAy%0D%0ANDAuODdMNDE5LjU3IDIzNS4wNkw0MTcuOTggMjI5LjMzTDQxNi4xNiAyMjMuN0w0MTQuMTIgMjE4%0D%0ALjE2TDQxMS44NiAyMTIuNzNMNDA5LjQgMjA3LjRMNDA2LjczIDIwMi4xOEw0MDMuODUgMTk3LjA4%0D%0ATDQwMC43OCAxOTIuMUwzOTcuNTIgMTg3LjI1TDM5NC4wOCAxODIuNTNMMzkwLjQ1IDE3Ny45NEwz%0D%0AODYuNjUgMTczLjQ5TDM4Mi42NyAxNjkuMTlMMzc4LjUzIDE2NS4wNEwzNzYuNDYgMTYzLjEyTDM3%0D%0ANy4wNSAxNjMuM0wzODIuNzkgMTY1LjI2TDM4Mi43OSAxNjUuMjZMMzg4LjQyIDE2Ny40NFoiIGlk%0D%0APSJnMXJLVlUzVkpiIj48L3BhdGg+PC9kZWZzPjxnPjxnPjxnPjx1c2UgeGxpbms6aHJlZj0iI2cx%0D%0AcktWVTNWSmIiIG9wYWNpdHk9IjEiIGZpbGw9IiMwMDAwMDAiIGZpbGwtb3BhY2l0eT0iMSI+PC91%0D%0Ac2U+PC9nPjwvZz48L2c+PC9zdmc+" style="width:20%; height:20%; margin-left:42%; margin-top: -10%" onclick="threeCardView(43)">';
-	document.getElementById("postButtons").innerHTML = '<img id="stars" src="data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGLTgiIHN0YW5kYWxvbmU9Im5vIj8+Cjwh%0D%0ARE9DVFlQRSBzdmcgUFVCTElDICItLy9XM0MvL0RURCBTVkcgMS4xLy9FTiIgImh0dHA6Ly93d3cu%0D%0AdzMub3JnL0dyYXBoaWNzL1NWRy8xLjEvRFREL3N2ZzExLmR0ZCI+CjxzdmcgdmVyc2lvbj0iMS4x%0D%0AIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHhtbG5zOnhsaW5rPSJodHRwOi8v%0D%0Ad3d3LnczLm9yZy8xOTk5L3hsaW5rIiBwcmVzZXJ2ZUFzcGVjdFJhdGlvPSJ4TWlkWU1pZCBtZWV0%0D%0AIiB2aWV3Qm94PSIwIDAgNjQwIDY0MCIgd2lkdGg9IjY0MCIgaGVpZ2h0PSI2NDAiPjxkZWZzPjxw%0D%0AYXRoIGQ9Ik0zMzkuNTkgMjA5Ljc3TDQxNy44NyAyMjAuMzNMMzYxLjIyIDI3MS41N0wzNzQuNiAz%0D%0ANDMuOTRMMzA0LjU3IDMwOS43N0wyMzQuNTUgMzQzLjk0TDI0Ny45MyAyNzEuNTdMMTkxLjI4IDIy%0D%0AMC4zM0wyNjkuNTcgMjA5Ljc3TDMwNC41NyAxNDMuOTRMMzM5LjU5IDIwOS43N1oiIGlkPSJjM3py%0D%0AUzJjbkY0Ij48L3BhdGg+PHBhdGggZD0iTTUwMi42OCAyNzEuNEw1NjUuNTMgMjgwLjExTDUyMC4w%0D%0ANSAzMjIuMzZMNTMwLjc5IDM4Mi4wMkw0NzQuNTcgMzUzLjg1TDQxOC4zNiAzODIuMDJMNDI5LjEg%0D%0AMzIyLjM2TDM4My42MiAyODAuMTFMNDQ2LjQ3IDI3MS40TDQ3NC41NyAyMTcuMTNMNTAyLjY4IDI3%0D%0AMS40WiIgaWQ9ImMxcUdmVHJIVk4iPjwvcGF0aD48cGF0aCBkPSJNMzg4LjI0IDQxMS45NUw0MjQu%0D%0AMjYgNDE3LjRMMzk4LjE5IDQ0My44M0w0MDQuMzQgNDgxLjE3TDM3Mi4xMyA0NjMuNTRMMzM5Ljkx%0D%0AIDQ4MS4xN0wzNDYuMDcgNDQzLjgzTDMyMCA0MTcuNEwzNTYuMDIgNDExLjk1TDM3Mi4xMyAzNzcu%0D%0AOThMMzg4LjI0IDQxMS45NVoiIGlkPSJiWkl4b29jRUIiPjwvcGF0aD48L2RlZnM+PGc+PGc+PGc+%0D%0APHVzZSB4bGluazpocmVmPSIjYzN6clMyY25GNCIgb3BhY2l0eT0iMSIgZmlsbD0iIzAwMDAwMCIg%0D%0AZmlsbC1vcGFjaXR5PSIxIj48L3VzZT48Zz48dXNlIHhsaW5rOmhyZWY9IiNjM3pyUzJjbkY0IiBv%0D%0AcGFjaXR5PSIxIiBmaWxsLW9wYWNpdHk9IjAiIHN0cm9rZT0iIzAwMDAwMCIgc3Ryb2tlLXdpZHRo%0D%0APSIxIiBzdHJva2Utb3BhY2l0eT0iMSI+PC91c2U+PC9nPjwvZz48Zz48dXNlIHhsaW5rOmhyZWY9%0D%0AIiNjMXFHZlRySFZOIiBvcGFjaXR5PSIxIiBmaWxsPSIjMDAwMDAwIiBmaWxsLW9wYWNpdHk9IjEi%0D%0APjwvdXNlPjxnPjx1c2UgeGxpbms6aHJlZj0iI2MxcUdmVHJIVk4iIG9wYWNpdHk9IjEiIGZpbGwt%0D%0Ab3BhY2l0eT0iMCIgc3Ryb2tlPSIjMDAwMDAwIiBzdHJva2Utd2lkdGg9IjEiIHN0cm9rZS1vcGFj%0D%0AaXR5PSIxIj48L3VzZT48L2c+PC9nPjxnPjx1c2UgeGxpbms6aHJlZj0iI2JaSXhvb2NFQiIgb3Bh%0D%0AY2l0eT0iMSIgZmlsbD0iIzAwMDAwMCIgZmlsbC1vcGFjaXR5PSIxIj48L3VzZT48Zz48dXNlIHhs%0D%0AaW5rOmhyZWY9IiNiWkl4b29jRUIiIG9wYWNpdHk9IjEiIGZpbGwtb3BhY2l0eT0iMCIgc3Ryb2tl%0D%0APSIjMDAwMDAwIiBzdHJva2Utd2lkdGg9IjEiIHN0cm9rZS1vcGFjaXR5PSIxIj48L3VzZT48L2c+%0D%0APC9nPjwvZz48L2c+PC9zdmc+" style="width:20%; height:20%; margin-left:42%; margin-top: 2%" onclick="threeCardView(43)">';
-	document.getElementById("textSpace").innerHTML = '<p><p>Think about a question you might have for the Poet Tarot Reader<br>It will read the cards from left to right. You can interpret the poem’s lines in<br>the following ways:</p><p><ul class="suggestions" style="list-style-type:none"><li>• Past, Present, Future<li>• You, Your Path, Your Potential<li>• You, Relationship, Partner<li>• Situation, Action, Outcome<li>• Idea, Process, Aspiration</ul></p>';
+	document.getElementById("images").innerHTML = '<img id="moon" src="https://github.com/cpmmckeown/heatherWork/blob/master/wiccan-triple-goddess-symbol.png?raw=true" style="width:20%; height:20%; margin-left:42%; margin-top: -10%" onclick="threeCardView(43)">';
+	//document.getElementById("postButtons").innerHTML = '<img id="stars" src="data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGLTgiIHN0YW5kYWxvbmU9Im5vIj8+Cjwh%0D%0ARE9DVFlQRSBzdmcgUFVCTElDICItLy9XM0MvL0RURCBTVkcgMS4xLy9FTiIgImh0dHA6Ly93d3cu%0D%0AdzMub3JnL0dyYXBoaWNzL1NWRy8xLjEvRFREL3N2ZzExLmR0ZCI+CjxzdmcgdmVyc2lvbj0iMS4x%0D%0AIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHhtbG5zOnhsaW5rPSJodHRwOi8v%0D%0Ad3d3LnczLm9yZy8xOTk5L3hsaW5rIiBwcmVzZXJ2ZUFzcGVjdFJhdGlvPSJ4TWlkWU1pZCBtZWV0%0D%0AIiB2aWV3Qm94PSIwIDAgNjQwIDY0MCIgd2lkdGg9IjY0MCIgaGVpZ2h0PSI2NDAiPjxkZWZzPjxw%0D%0AYXRoIGQ9Ik0zMzkuNTkgMjA5Ljc3TDQxNy44NyAyMjAuMzNMMzYxLjIyIDI3MS41N0wzNzQuNiAz%0D%0ANDMuOTRMMzA0LjU3IDMwOS43N0wyMzQuNTUgMzQzLjk0TDI0Ny45MyAyNzEuNTdMMTkxLjI4IDIy%0D%0AMC4zM0wyNjkuNTcgMjA5Ljc3TDMwNC41NyAxNDMuOTRMMzM5LjU5IDIwOS43N1oiIGlkPSJjM3py%0D%0AUzJjbkY0Ij48L3BhdGg+PHBhdGggZD0iTTUwMi42OCAyNzEuNEw1NjUuNTMgMjgwLjExTDUyMC4w%0D%0ANSAzMjIuMzZMNTMwLjc5IDM4Mi4wMkw0NzQuNTcgMzUzLjg1TDQxOC4zNiAzODIuMDJMNDI5LjEg%0D%0AMzIyLjM2TDM4My42MiAyODAuMTFMNDQ2LjQ3IDI3MS40TDQ3NC41NyAyMTcuMTNMNTAyLjY4IDI3%0D%0AMS40WiIgaWQ9ImMxcUdmVHJIVk4iPjwvcGF0aD48cGF0aCBkPSJNMzg4LjI0IDQxMS45NUw0MjQu%0D%0AMjYgNDE3LjRMMzk4LjE5IDQ0My44M0w0MDQuMzQgNDgxLjE3TDM3Mi4xMyA0NjMuNTRMMzM5Ljkx%0D%0AIDQ4MS4xN0wzNDYuMDcgNDQzLjgzTDMyMCA0MTcuNEwzNTYuMDIgNDExLjk1TDM3Mi4xMyAzNzcu%0D%0AOThMMzg4LjI0IDQxMS45NVoiIGlkPSJiWkl4b29jRUIiPjwvcGF0aD48L2RlZnM+PGc+PGc+PGc+%0D%0APHVzZSB4bGluazpocmVmPSIjYzN6clMyY25GNCIgb3BhY2l0eT0iMSIgZmlsbD0iIzAwMDAwMCIg%0D%0AZmlsbC1vcGFjaXR5PSIxIj48L3VzZT48Zz48dXNlIHhsaW5rOmhyZWY9IiNjM3pyUzJjbkY0IiBv%0D%0AcGFjaXR5PSIxIiBmaWxsLW9wYWNpdHk9IjAiIHN0cm9rZT0iIzAwMDAwMCIgc3Ryb2tlLXdpZHRo%0D%0APSIxIiBzdHJva2Utb3BhY2l0eT0iMSI+PC91c2U+PC9nPjwvZz48Zz48dXNlIHhsaW5rOmhyZWY9%0D%0AIiNjMXFHZlRySFZOIiBvcGFjaXR5PSIxIiBmaWxsPSIjMDAwMDAwIiBmaWxsLW9wYWNpdHk9IjEi%0D%0APjwvdXNlPjxnPjx1c2UgeGxpbms6aHJlZj0iI2MxcUdmVHJIVk4iIG9wYWNpdHk9IjEiIGZpbGwt%0D%0Ab3BhY2l0eT0iMCIgc3Ryb2tlPSIjMDAwMDAwIiBzdHJva2Utd2lkdGg9IjEiIHN0cm9rZS1vcGFj%0D%0AaXR5PSIxIj48L3VzZT48L2c+PC9nPjxnPjx1c2UgeGxpbms6aHJlZj0iI2JaSXhvb2NFQiIgb3Bh%0D%0AY2l0eT0iMSIgZmlsbD0iIzAwMDAwMCIgZmlsbC1vcGFjaXR5PSIxIj48L3VzZT48Zz48dXNlIHhs%0D%0AaW5rOmhyZWY9IiNiWkl4b29jRUIiIG9wYWNpdHk9IjEiIGZpbGwtb3BhY2l0eT0iMCIgc3Ryb2tl%0D%0APSIjMDAwMDAwIiBzdHJva2Utd2lkdGg9IjEiIHN0cm9rZS1vcGFjaXR5PSIxIj48L3VzZT48L2c+%0D%0APC9nPjwvZz48L2c+PC9zdmc+" style="width:20%; height:20%; margin-left:42%; margin-top: 2%" onclick="threeCardView(43)">';
+	document.getElementById("textSpace").innerHTML = '<p onclick="threeCardView(43)">Think about a question you might have for the Poet Tarot Reader<br>It will read the cards from left to right. You can interpret the poem’s lines in<br>the following ways:</p><p><ul class="suggestions" style="list-style-type:none"><li>• Past, Present, Future<li>• You, Your Path, Your Potential<li>• You, Relationship, Partner<li>• Situation, Action, Outcome<li>• Idea, Process, Aspiration</ul></p>';
 	try {
     document.getElementById("yes").innerHTML = ''; 
 	document.getElementById("no").innerHTML = '';
